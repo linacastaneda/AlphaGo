@@ -1,14 +1,10 @@
-# AlphaGo – Implementación de Go con Inteligencia Artificial MCTS
+# AlphaGo – Implementación de Go con MCTS
 
 ## Descripción del proyecto
 
 Este proyecto desarrolla una aplicación capaz de jugar **Go**, inspirada en los conceptos presentados en el documental *AlphaGo*.
 
-El objetivo principal es implementar las reglas fundamentales del juego y desarrollar un agente de inteligencia artificial capaz de seleccionar movimientos mediante **Monte Carlo Tree Search (MCTS)**.
-
-El proyecto permite estudiar de manera práctica algunos de los principios utilizados en sistemas de inteligencia artificial para juegos de estrategia, particularmente la exploración de espacios de búsqueda mediante simulaciones.
-
-> **Nota:** esta implementación es una aproximación académica simplificada. El sistema AlphaGo original combinaba MCTS con redes neuronales de política y valor, mientras que este proyecto utiliza MCTS con simulaciones aleatorias.
+El objetivo principal es implementar una aplicación que pueda jugar GO usando las reglas fundamentales del juego y  simular alphaGo en este usando solo **Monte Carlo Tree Search (MCTS)** sin redes neuronales de política (propone un movimiento) y valor (calcula el valor futuro de quedar en esa posición) tal y como es el AlphaGo.
 
 ---
 
@@ -57,7 +53,7 @@ Contiene las pruebas unitarias correspondientes al motor y las reglas del juego.
 
 ### `test_ia.py`
 
-Contiene pruebas para verificar el comportamiento básico de la inteligencia artificial.
+Contiene pruebas para verificar el comportamiento básico de la inteligencia artificial, es decir el uso de MCTS.
 
 ### `benchmark.py`
 
@@ -101,9 +97,9 @@ Cada iteración está compuesta por cuatro etapas principales.
 
 ## 3.1 Selección
 
-El algoritmo recorre el árbol existente seleccionando los nodos más prometedores.
+El algoritmo recorre el árbol existente seleccionando los nodos más prometedores usando UCT
 
-Para equilibrar la exploración de nuevas posibilidades y el aprovechamiento de movimientos que anteriormente obtuvieron buenos resultados, se utiliza el criterio **UCT (Upper Confidence Bound applied to Trees)**.
+Para equilibrar la exploración de nuevas posibilidades y el aprovechamiento de movimientos que anteriormente obtuvieron buenos resultados, se utiliza el criterio **UCT (Upper Confidence Bound applied to Trees)** este se encarga de calcular un puntaje para cada nodo hijo y elige el que tenga valor mas alto haciendo uso de una ecuación que se compone por el termino de **explotación** que es la rentabilidad, en este caso # de victorias pasando por el nodo y sobre numero de veces que el nodo ha sido visitado (tasa de victorias del nodo) y de **Exploración** que mide que tan "ignorado" esta el nodo, con estas dos escoge el camino a seguir.
 
 ## 3.2 Expansión
 
@@ -139,7 +135,7 @@ Esto permite evaluar los resultados desde la perspectiva correspondiente a cada 
 
 # 4. Pruebas
 
-Se implementaron pruebas unitarias para verificar el comportamiento del motor y de la inteligencia artificial.
+Se implementaron pruebas unitarias para verificar el comportamiento
 
 Las pruebas del motor comprueban, entre otros aspectos:
 
@@ -168,7 +164,7 @@ Las pruebas de la IA verifican que:
 
 # 5. Evaluación del desempeño
 
-Para analizar el comportamiento de la inteligencia artificial se desarrolló un benchmark que enfrenta el agente MCTS contra un jugador que selecciona movimientos legales de manera aleatoria.
+Para analizar el comportamiento se desarrolló un benchmark que enfrenta el agente MCTS contra un jugador que selecciona movimientos legales de manera aleatoria.
 
 El experimento se realizó sobre un tablero **5×5**.
 
@@ -224,9 +220,8 @@ La configuración de 100 simulaciones obtuvo el mejor resultado de esta ejecuci�
 
 Sin embargo, el porcentaje de victorias no aumentó de forma estrictamente progresiva. La configuración de 50 simulaciones obtuvo un resultado inferior a las configuraciones de 10 y 25 simulaciones.
 
-Esto no permite concluir que 50 simulaciones sean necesariamente peores. MCTS contiene componentes estocásticos y el oponente utilizado en el benchmark también selecciona movimientos aleatoriamente. Adicionalmente, una muestra de 10 partidas por configuración produce una variabilidad considerable: una sola partida representa 10 puntos porcentuales del resultado.
+Esto no permite concluir que 50 simulaciones sean necesariamente peores. MCTS contiene componentes estocásticos(aleatorios) y el oponente utilizado en el benchmark también selecciona movimientos aleatoriamente. Adicionalmente, una muestra de 10 partidas por configuración produce una variabilidad considerable: una sola partida representa 10 puntos porcentuales del resultado.
 
-Por esta razón, los porcentajes deben interpretarse como resultados experimentales de esta ejecución y no como probabilidades absolutas de victoria.
 
 ---
 
@@ -270,7 +265,7 @@ No se observa una relación estrictamente lineal entre el número de simulacione
 
 La configuración de 25 simulaciones produjo las partidas más largas, mientras que las configuraciones de 50 y 100 simulaciones presentaron valores similares y menores.
 
-Debido al carácter aleatorio del adversario y de las simulaciones, esta métrica debe considerarse secundaria y requeriría un número mayor de partidas para establecer una tendencia estadísticamente más sólida.
+Debido al carácter aleatorio del adversario y de las simulaciones, esta métrica debe considerarse secundaria y requeriría un número mayor de partidas para establecer una tendencia.
 
 
 ---
@@ -282,10 +277,6 @@ MCTS es un algoritmo con componentes aleatorios.
 Durante la expansión y simulación pueden seleccionarse diferentes movimientos en ejecuciones distintas. El adversario utilizado para el benchmark también utiliza una estrategia aleatoria.
 
 Como consecuencia, ejecutar nuevamente el mismo experimento puede producir porcentajes de victoria diferentes.
-
-Esta variabilidad es esperada y constituye una de las limitaciones del experimento.
-
-Para obtener estimaciones más estables sería conveniente aumentar el número de partidas por configuración y analizar medidas adicionales como desviación estándar o intervalos de confianza.
 
 ---
 
@@ -305,9 +296,6 @@ Esta aplicación utiliza:
 - un motor propio para validar las reglas de Go.
 
 AlphaGo incorporaba adicionalmente modelos de aprendizaje profundo para orientar la búsqueda y evaluar posiciones.
-
-Por lo tanto, el proyecto no pretende reproducir completamente AlphaGo, sino implementar y analizar de forma práctica uno de los principios fundamentales utilizados para abordar la toma de decisiones en Go.
-
 ---
 
 # 13. Conclusiones
@@ -323,8 +311,6 @@ El resultado más consistente del benchmark corresponde al costo computacional: 
 En términos de efectividad, una mayor cantidad de simulaciones permite realizar una búsqueda más extensa, pero los resultados presentan variabilidad debido a los componentes aleatorios del algoritmo y al tamaño reducido de la muestra.
 
 En la ejecución analizada, la configuración de 100 simulaciones obtuvo 10 victorias en 10 partidas, aunque necesitó aproximadamente 0.51 segundos por decisión. En contraste, la configuración de 10 simulaciones obtuvo 9 victorias en 10 partidas utilizando aproximadamente 0.05 segundos por jugada.
-
-Los resultados permiten observar experimentalmente uno de los principales compromisos de los algoritmos de búsqueda: **una mayor capacidad de exploración puede mejorar la toma de decisiones, pero requiere un mayor costo computacional**.
 
 ---
 
@@ -349,13 +335,3 @@ python backend/benchmark.py
 ```
 
 ---
-
-## Tecnologías utilizadas
-
-- Python
-- Monte Carlo Tree Search (MCTS)
-- UCT
-- Unittest
-- Matplotlib
-- Git
-- GitHub

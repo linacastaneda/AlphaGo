@@ -131,27 +131,3 @@ def graficar_resultados_benchmark(resultados):
     plt.tight_layout()
     plt.savefig("mcts_movimientos.png", dpi=300)
     plt.show()
-
-        # Gráfica adicional: Trade-off Tiempo vs Winrate
-    plt.figure(figsize=(8, 5))
-    plt.scatter(tiempos, winrates, color="#d62728", s=100, zorder=5)
-    plt.plot(tiempos, winrates, linestyle="--", color="gray", alpha=0.7)
-
-    plt.xlabel("Tiempo promedio por jugada (segundos)")
-    plt.ylabel("Porcentaje de victorias (%)")
-    plt.title("Relación Costo-Beneficio (Trade-off Tiempo vs. Winrate)")
-    plt.grid(True, linestyle="--", alpha=0.5)
-
-    for x, y, sim in zip(tiempos, winrates, simulaciones):
-        plt.annotate(
-            f"{sim} sim ({y:.0f}%)",
-            (x, y),
-            textcoords="offset points",
-            xytext=(0, 10),
-            ha="center",
-            fontweight="bold"
-        )
-
-    plt.tight_layout()
-    plt.savefig("mcts_tradeoff.png", dpi=300)
-    plt.show()

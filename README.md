@@ -301,7 +301,6 @@ Esta aplicación utiliza:
 - simulaciones aleatorias.
 - un motor propio para validar las reglas de Go.
 
-AlphaGo incorporaba adicionalmente modelos de aprendizaje profundo para orientar la búsqueda y evaluar posiciones.
 ---
 
 # 13. Conclusiones

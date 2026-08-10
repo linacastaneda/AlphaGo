@@ -204,13 +204,14 @@ Los resultados obtenidos en la ejecución analizada fueron:
 | 50 | 8 | 2 | 0 | 80 % | 0.2572 s | 46.7 |
 | 100 | 10 | 0 | 0 | 100 % | 0.5121 s | 46.1 |
 
+![captura ejecución](Ejecucion_Benchmark.png)
 ---
 
 # 7. Análisis de efectividad
 
 La siguiente gráfica muestra el porcentaje de victorias obtenido por cada configuración.
 
-![Efectividad de MCTS](backend/mcts_winrate.png)
+![Efectividad de MCTS](mcts_winrate.png)
 
 En la muestra evaluada, todas las configuraciones alcanzaron porcentajes de victoria iguales o superiores al **80 %** frente al jugador aleatorio.
 

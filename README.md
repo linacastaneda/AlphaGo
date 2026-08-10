@@ -1,5 +1,10 @@
 # AlphaGo – Implementación de Go con MCTS
 
+## Integrantes
+
+- **Lina María Castañeda Hernández**
+- **Jorge Antonio García Romero**
+
 ## Descripción del proyecto
 
 Este proyecto desarrolla una aplicación capaz de jugar **Go**, inspirada en los conceptos presentados en el documental *AlphaGo*.

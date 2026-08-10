@@ -283,7 +283,98 @@ class TestJuegoGo(unittest.TestCase):
         self.juego.pasar_turno()
 
         self.assertTrue(self.juego.partida_terminada())
+    def test_region_vacia(self):
+        """Verifica la detección de una región vacía."""
 
+        # Creamos manualmente un pequeño territorio.
+        self.juego.tablero = [
+            [NEGRA, NEGRA, NEGRA, VACIO, VACIO],
+            [NEGRA, VACIO, NEGRA, VACIO, VACIO],
+            [NEGRA, NEGRA, NEGRA, VACIO, VACIO],
+            [VACIO, VACIO, VACIO, VACIO, VACIO],
+            [VACIO, VACIO, VACIO, VACIO, VACIO]
+        ]
+
+        region = self.juego.obtener_region_vacia(1, 1)
+
+        self.assertEqual(region, {(1, 1)})
+
+
+    def test_dueno_territorio(self):
+        """Verifica que una región rodeada por negras pertenezca a negras."""
+
+        self.juego.tablero = [
+            [NEGRA, NEGRA, NEGRA, VACIO, VACIO],
+            [NEGRA, VACIO, NEGRA, VACIO, VACIO],
+            [NEGRA, NEGRA, NEGRA, VACIO, VACIO],
+            [VACIO, VACIO, VACIO, VACIO, VACIO],
+            [VACIO, VACIO, VACIO, VACIO, VACIO]
+        ]
+
+        region = self.juego.obtener_region_vacia(1, 1)
+
+        dueno = self.juego.obtener_dueno_region(region)
+
+        self.assertEqual(dueno, NEGRA)
+
+
+    def test_calcular_puntuacion(self):
+        """Verifica la puntuación básica por área."""
+
+        self.juego.tablero = [
+            [NEGRA, NEGRA, NEGRA, VACIO, VACIO],
+            [NEGRA, VACIO, NEGRA, VACIO, VACIO],
+            [NEGRA, NEGRA, NEGRA, VACIO, VACIO],
+            [VACIO, VACIO, VACIO, BLANCA, VACIO],
+            [VACIO, VACIO, VACIO, VACIO, VACIO]
+        ]
+
+        negras, blancas = self.juego.calcular_puntuacion()
+
+        # Las negras tienen 8 piedras y un punto
+        # de territorio interior.
+        self.assertGreaterEqual(negras, 9)
+
+        # Debe existir al menos la piedra blanca.
+        self.assertGreaterEqual(blancas, 1)
+
+
+    def test_obtener_movimientos_validos(self):
+        """Verifica que solamente se devuelvan movimientos legales."""
+
+        self.juego.jugar(2, 2)
+
+        movimientos = self.juego.obtener_movimientos_validos()
+
+        # La posición ocupada no puede aparecer.
+        self.assertNotIn((2, 2), movimientos)
+
+        # Una posición vacía normal sí debe aparecer.
+        self.assertIn((0, 0), movimientos)
+
+
+    def test_copiar_partida(self):
+        """Verifica que una copia no modifique la partida original."""
+
+        self.juego.jugar(2, 2)
+
+        copia = self.juego.copiar()
+
+        # Modificamos únicamente la copia.
+        copia.jugar(1, 1)
+
+        # La copia contiene la nueva piedra.
+        self.assertEqual(
+            copia.tablero[1][1],
+            BLANCA
+        )
+
+        # El tablero original debe permanecer vacío
+        # en esa posición.
+        self.assertEqual(
+            self.juego.tablero[1][1],
+            VACIO
+        )
 
 if __name__ == "__main__":
     unittest.main()

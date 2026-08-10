@@ -230,3 +230,143 @@ class JuegoGo:
         """Indica si ambos jugadores pasaron consecutivamente."""
 
         return self.pases_consecutivos >= 2
+    def obtener_region_vacia(self, fila, columna):
+        """Obtiene una región de posiciones vacías conectadas."""
+
+        region = set()
+        pendientes = [(fila, columna)]
+
+        while pendientes:
+
+            fila_actual, columna_actual = pendientes.pop()
+
+            if (fila_actual, columna_actual) in region:
+                continue
+
+            if self.tablero[fila_actual][columna_actual] != VACIO:
+                continue
+
+            region.add((fila_actual, columna_actual))
+
+            for fila_vecina, columna_vecina in self.obtener_vecinos(
+                fila_actual, columna_actual
+            ):
+
+                if self.tablero[fila_vecina][columna_vecina] == VACIO:
+
+                    if (fila_vecina, columna_vecina) not in region:
+                        pendientes.append(
+                            (fila_vecina, columna_vecina)
+                        )
+
+        return region
+
+
+    def obtener_dueno_region(self, region):
+        """Determina qué jugador rodea una región vacía."""
+
+        colores_vecinos = set()
+
+        for fila, columna in region:
+
+            for fila_vecina, columna_vecina in self.obtener_vecinos(
+                fila, columna
+            ):
+
+                valor = self.tablero[fila_vecina][columna_vecina]
+
+                if valor != VACIO:
+                    colores_vecinos.add(valor)
+
+        # Si solamente hay un color alrededor,
+        # ese jugador controla el territorio.
+        if len(colores_vecinos) == 1:
+            return colores_vecinos.pop()
+
+        # Si está rodeada por ambos colores o ninguno,
+        # consideramos la región neutral.
+        return VACIO
+
+
+    def calcular_puntuacion(self):
+        """Calcula la puntuación por área de negras y blancas."""
+
+        puntos_negras = 0
+        puntos_blancas = 0
+
+        # Primero contamos las piedras presentes.
+        for fila in self.tablero:
+            for posicion in fila:
+
+                if posicion == NEGRA:
+                    puntos_negras += 1
+
+                elif posicion == BLANCA:
+                    puntos_blancas += 1
+
+        # Ahora calculamos los territorios.
+        regiones_revisadas = set()
+
+        for fila in range(self.tamano):
+            for columna in range(self.tamano):
+
+                if (
+                    self.tablero[fila][columna] == VACIO
+                    and (fila, columna) not in regiones_revisadas
+                ):
+
+                    region = self.obtener_region_vacia(
+                        fila,
+                        columna
+                    )
+
+                    regiones_revisadas.update(region)
+
+                    dueno = self.obtener_dueno_region(region)
+
+                    if dueno == NEGRA:
+                        puntos_negras += len(region)
+
+                    elif dueno == BLANCA:
+                        puntos_blancas += len(region)
+
+        return puntos_negras, puntos_blancas
+
+
+    def obtener_movimientos_validos(self):
+        """Devuelve todas las jugadas legales disponibles."""
+
+        movimientos = []
+
+        for fila in range(self.tamano):
+            for columna in range(self.tamano):
+
+                if self.es_jugada_valida(fila, columna):
+                    movimientos.append(
+                        (fila, columna)
+                    )
+
+        return movimientos
+
+
+    def copiar(self):
+        """Crea una copia independiente de la partida."""
+
+        copia = JuegoGo(self.tamano)
+
+        copia.tablero = [
+            fila[:]
+            for fila in self.tablero
+        ]
+
+        copia.jugador_actual = self.jugador_actual
+        copia.pases_consecutivos = self.pases_consecutivos
+
+        if self.tablero_anterior is not None:
+
+            copia.tablero_anterior = [
+                fila[:]
+                for fila in self.tablero_anterior
+            ]
+
+        return copia

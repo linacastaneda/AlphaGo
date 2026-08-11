@@ -50,6 +50,10 @@
   }
 
   let miTurno = false;
+  // "Generación" de partida: cada vez que se inicia una nueva, se incrementa.
+  // Permite invalidar timeouts de IA antiguos para que nunca jueguen fuera de
+  // turno ni bloqueen la partida recién creada.
+  let generacion = 0;
 
   async function api(ruta, opciones = {}) {
     const respuesta = await fetch(ruta, {
@@ -285,10 +289,7 @@
       return;
     }
     // si ahora le toca a una IA, juega sola
-    const leTocaIa = (estado.modo === "vs_ia" && datos.turno === 2)
-      || estado.modo === "ia_ia"
-      || (estado.modo === "duelo" && es_ia_en_turno());
-    if (leTocaIa) {
+    if (le_toca_ia()) {
       mensaje(`La IA (${nombre_jugador(datos.turno)}) está pensando…`);
       window.setTimeout(movimiento_ia_automatico, 260);
     } else {
@@ -296,12 +297,23 @@
     }
   }
 
+  function le_toca_ia() {
+    if (estado.terminada || !estado.id) return false;
+    const simbolo = estado.turno === 1 ? "B" : "W";
+    return /^(mcts|alphago|ia)/.test(estado.jugadores[simbolo] || "humano");
+  }
+
   async function movimiento_ia_automatico() {
-    if (estado.ocupado || !estado.id || estado.terminada) return;
+    const gen = generacion;
+    // Solo juega si sigue siendo el turno de una IA en la MISMA partida;
+    // así un timeout viejo no mueve fuera de turno tras un ganador o una
+    // partida nueva.
+    if (estado.ocupado || !estado.id || estado.terminada || !le_toca_ia()) return;
     estado.ocupado = true;
     actualizar_botones();
     try {
       const datos = await api(`/api/game/${estado.id}/ai-move`, { method: "POST" });
+      if (gen !== generacion) return;
       procesarRespuesta(datos);
     } catch (err) {
       mensaje(`IA: ${err.message}`, true);
@@ -313,6 +325,12 @@
   elems.botonNueva.addEventListener("click", async () => {
     elems.botonNueva.disabled = true;
     mostrar_enlace_replay(null);
+    // Invalida cualquier IA programada de la partida anterior y resetea el
+    // estado para que no se arrastre el bloqueo tras un ganador/empate.
+    generacion += 1;
+    estado.ocupado = false;
+    miTurno = false;
+    movimientosAnteriores = 0;
     try {
       const cuerpo = {
         modo: elems.modo.value,
@@ -334,12 +352,13 @@
         elems.botonPasoIa.disabled = false;
       } else if (estado.modo === "duelo") {
         mensaje(`Duelo: ${nombre_jugador(1)} vs ${nombre_jugador(2)}.`);
-        if (es_ia_en_turno()) window.setTimeout(movimiento_ia_automatico, 300);
+        if (le_toca_ia()) window.setTimeout(movimiento_ia_automatico, 300);
       } else if (estado.modo === "vs_ia") {
         mensaje("Negro juega primero: coloca tu piedra.");
       }
     } catch (err) {
       mensaje(err.message, true);
+      estado.ocupado = false;
     } finally {
       elems.botonNueva.disabled = false;
     }

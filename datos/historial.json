@@ -1,0 +1,223 @@
+{
+  "partidas": [
+    {
+      "id": "6bae4454d516",
+      "fecha": "2026-08-11T03:53:25.118524+00:00",
+      "tablero": 9,
+      "jugadores": {
+        "B": "mcts-200",
+        "W": "mcts-200"
+      },
+      "num_movimientos": 93,
+      "resultado": {
+        "territorio": {
+          "1": 1,
+          "2": 0
+        },
+        "piedras": {
+          "1": 41,
+          "2": 36
+        },
+        "totales": {
+          "negro": 42,
+          "blanco": 43.5
+        },
+        "komi": 7.5,
+        "ganador": 2,
+        "margen": 1.5,
+        "por_rendicion": false,
+        "movimientos": 93
+      }
+    },
+    {
+      "id": "1d0a7602f8a4",
+      "fecha": "2026-08-11T03:52:23.103392+00:00",
+      "tablero": 9,
+      "jugadores": {
+        "B": "mcts-800",
+        "W": "mcts-800"
+      },
+      "num_movimientos": 50,
+      "resultado": {
+        "territorio": {
+          "1": 1,
+          "2": 1
+        },
+        "piedras": {
+          "1": 24,
+          "2": 25
+        },
+        "totales": {
+          "negro": 25,
+          "blanco": 33.5
+        },
+        "komi": 7.5,
+        "ganador": 2,
+        "margen": 8.5,
+        "por_rendicion": false,
+        "movimientos": 50
+      }
+    },
+    {
+      "id": "aee364119f83",
+      "fecha": "2026-08-11T03:36:04.819440+00:00",
+      "tablero": 9,
+      "jugadores": {
+        "B": "mcts-250",
+        "W": "lina-250"
+      },
+      "num_movimientos": 91,
+      "resultado": {
+        "territorio": {
+          "1": 2,
+          "2": 2
+        },
+        "piedras": {
+          "1": 39,
+          "2": 37
+        },
+        "totales": {
+          "negro": 41,
+          "blanco": 46.5
+        },
+        "komi": 7.5,
+        "ganador": 2,
+        "margen": 5.5,
+        "por_rendicion": false,
+        "movimientos": 91
+      }
+    },
+    {
+      "id": "a7e1c1b17f3f",
+      "fecha": "2026-08-11T02:31:10.324381+00:00",
+      "tablero": 9,
+      "jugadores": {
+        "B": "mcts-250",
+        "W": "lina-250"
+      },
+      "num_movimientos": 80,
+      "resultado": {
+        "ganador": 1,
+        "por_rendicion": true,
+        "margen": null
+      }
+    },
+    {
+      "id": "be9c8c5c0507",
+      "fecha": "2026-08-10T23:50:19.949741+00:00",
+      "tablero": 9,
+      "jugadores": {
+        "B": "humano",
+        "W": "humano"
+      },
+      "num_movimientos": 10,
+      "resultado": {
+        "ganador": 2,
+        "por_rendicion": true,
+        "margen": null
+      }
+    },
+    {
+      "id": "418642ab1171",
+      "fecha": "2026-08-10T23:47:12.636864+00:00",
+      "tablero": 9,
+      "jugadores": {
+        "B": "humano",
+        "W": "mcts-250"
+      },
+      "num_movimientos": 6,
+      "resultado": {
+        "ganador": 2,
+        "por_rendicion": true,
+        "margen": null
+      }
+    },
+    {
+      "id": "9ea3f2c5bf00",
+      "fecha": "2026-08-10T22:13:28.054995+00:00",
+      "tablero": 9,
+      "jugadores": {
+        "B": "humano",
+        "W": "humano"
+      },
+      "num_movimientos": 3,
+      "resultado": {
+        "territorio": {
+          "1": 80,
+          "2": 0
+        },
+        "piedras": {
+          "1": 1,
+          "2": 0
+        },
+        "totales": {
+          "negro": 81,
+          "blanco": 7.5
+        },
+        "komi": 7.5,
+        "ganador": 1,
+        "margen": 73.5,
+        "por_rendicion": false,
+        "movimientos": 3
+      }
+    },
+    {
+      "id": "394956886dd5",
+      "fecha": "2026-08-10T22:01:47.435359+00:00",
+      "tablero": 9,
+      "jugadores": {
+        "B": "humano",
+        "W": "humano"
+      },
+      "num_movimientos": 2,
+      "resultado": {
+        "territorio": {
+          "1": 0,
+          "2": 0
+        },
+        "piedras": {
+          "1": 0,
+          "2": 0
+        },
+        "totales": {
+          "negro": 0,
+          "blanco": 7.5
+        },
+        "komi": 7.5,
+        "ganador": 2,
+        "margen": 7.5,
+        "por_rendicion": false,
+        "movimientos": 2
+      }
+    },
+    {
+      "id": "20a0f8b631d1",
+      "fecha": "2026-08-10T22:01:34.391664+00:00",
+      "tablero": 9,
+      "jugadores": {
+        "B": "humano",
+        "W": "humano"
+      },
+      "num_movimientos": 2,
+      "resultado": {
+        "territorio": {
+          "1": 0,
+          "2": 0
+        },
+        "piedras": {
+          "1": 0,
+          "2": 0
+        },
+        "totales": {
+          "negro": 0,
+          "blanco": 7.5
+        },
+        "komi": 7.5,
+        "ganador": 2,
+        "margen": 7.5,
+        "por_rendicion": false,
+        "movimientos": 2
+      }
+    }
+  ]
+}

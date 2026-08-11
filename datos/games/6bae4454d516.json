@@ -1,0 +1,2168 @@
+{
+  "id": "6bae4454d516",
+  "board_size": 9,
+  "komi": 7.5,
+  "fecha": "2026-08-11T03:53:25.118524+00:00",
+  "jugadores": {
+    "B": "mcts-200",
+    "W": "mcts-200"
+  },
+  "config": {
+    "simulaciones": 800,
+    "modo": "duelo",
+    "tiempo_limite_ms": 600,
+    "limite_movimientos": 360,
+    "id": "6bae4454d516"
+  },
+  "movimientos": [
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 654.87,
+      "ai": {
+        "sims": 136,
+        "time_ms": 601.06,
+        "win_rate": 1.0,
+        "nodes": 4376,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 654.94
+      },
+      "coord": [
+        4,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 604.58,
+      "ai": {
+        "sims": 139,
+        "time_ms": 604.52,
+        "win_rate": 0.6667,
+        "nodes": 4562,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 604.64
+      },
+      "coord": [
+        4,
+        8
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 600.34,
+      "ai": {
+        "sims": 134,
+        "time_ms": 600.3,
+        "win_rate": 1.0,
+        "nodes": 4268,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 600.38
+      },
+      "coord": [
+        3,
+        7
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 601.02,
+      "ai": {
+        "sims": 128,
+        "time_ms": 600.97,
+        "win_rate": 0.5,
+        "nodes": 3824,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 601.06
+      },
+      "coord": [
+        1,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 603.15,
+      "ai": {
+        "sims": 127,
+        "time_ms": 603.11,
+        "win_rate": 1.0,
+        "nodes": 3775,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 603.2
+      },
+      "coord": [
+        5,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 601.64,
+      "ai": {
+        "sims": 119,
+        "time_ms": 601.6,
+        "win_rate": 0.5,
+        "nodes": 3194,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 601.69
+      },
+      "coord": [
+        2,
+        8
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 601.58,
+      "ai": {
+        "sims": 113,
+        "time_ms": 601.52,
+        "win_rate": 1.0,
+        "nodes": 2777,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 601.62
+      },
+      "coord": [
+        4,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 604.07,
+      "ai": {
+        "sims": 109,
+        "time_ms": 604.02,
+        "win_rate": 0.5,
+        "nodes": 2518,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 604.11
+      },
+      "coord": [
+        0,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 604.93,
+      "ai": {
+        "sims": 104,
+        "time_ms": 604.88,
+        "win_rate": 1.0,
+        "nodes": 2192,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 604.97
+      },
+      "coord": [
+        5,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 601.62,
+      "ai": {
+        "sims": 100,
+        "time_ms": 601.57,
+        "win_rate": 0.6667,
+        "nodes": 1874,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 601.67
+      },
+      "coord": [
+        0,
+        8
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 603.1,
+      "ai": {
+        "sims": 96,
+        "time_ms": 603.06,
+        "win_rate": 1.0,
+        "nodes": 1706,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 603.16
+      },
+      "coord": [
+        8,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 603.74,
+      "ai": {
+        "sims": 94,
+        "time_ms": 603.68,
+        "win_rate": 0.5,
+        "nodes": 1612,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 603.79
+      },
+      "coord": [
+        5,
+        3
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 602.42,
+      "ai": {
+        "sims": 90,
+        "time_ms": 602.38,
+        "win_rate": 1.0,
+        "nodes": 1382,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 602.46
+      },
+      "coord": [
+        0,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 605.26,
+      "ai": {
+        "sims": 89,
+        "time_ms": 605.22,
+        "win_rate": 0.5,
+        "nodes": 1362,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 605.31
+      },
+      "coord": [
+        7,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 600.34,
+      "ai": {
+        "sims": 88,
+        "time_ms": 600.3,
+        "win_rate": 1.0,
+        "nodes": 1342,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 600.38
+      },
+      "coord": [
+        8,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 603.4,
+      "ai": {
+        "sims": 82,
+        "time_ms": 603.37,
+        "win_rate": 0.5,
+        "nodes": 992,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 603.45
+      },
+      "coord": [
+        5,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 601.03,
+      "ai": {
+        "sims": 81,
+        "time_ms": 600.99,
+        "win_rate": 1.0,
+        "nodes": 977,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 601.07
+      },
+      "coord": [
+        2,
+        2
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 600.81,
+      "ai": {
+        "sims": 79,
+        "time_ms": 600.76,
+        "win_rate": 0.5,
+        "nodes": 898,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 600.86
+      },
+      "coord": [
+        4,
+        3
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 604.59,
+      "ai": {
+        "sims": 78,
+        "time_ms": 604.54,
+        "win_rate": 1.0,
+        "nodes": 884,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 604.64
+      },
+      "coord": [
+        3,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 601.74,
+      "ai": {
+        "sims": 72,
+        "time_ms": 601.7,
+        "win_rate": 0.6667,
+        "nodes": 436,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 601.78
+      },
+      "coord": [
+        6,
+        8
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 600.08,
+      "ai": {
+        "sims": 70,
+        "time_ms": 600.05,
+        "win_rate": 1.0,
+        "nodes": 490,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 600.13
+      },
+      "coord": [
+        3,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 610.12,
+      "ai": {
+        "sims": 68,
+        "time_ms": 610.07,
+        "win_rate": 0.6667,
+        "nodes": 361,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 610.17
+      },
+      "coord": [
+        7,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 600.54,
+      "ai": {
+        "sims": 62,
+        "time_ms": 600.5,
+        "win_rate": 0.5,
+        "nodes": 120,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 600.6
+      },
+      "coord": [
+        5,
+        7
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 600.1,
+      "ai": {
+        "sims": 61,
+        "time_ms": 600.06,
+        "win_rate": 0.5,
+        "nodes": 118,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 600.15
+      },
+      "coord": [
+        2,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 607.66,
+      "ai": {
+        "sims": 60,
+        "time_ms": 607.63,
+        "win_rate": 1.0,
+        "nodes": 116,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 607.71
+      },
+      "coord": [
+        0,
+        2
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 607.38,
+      "ai": {
+        "sims": 57,
+        "time_ms": 607.32,
+        "win_rate": 1.0,
+        "nodes": 58,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 607.45
+      },
+      "coord": [
+        1,
+        3
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 607.76,
+      "ai": {
+        "sims": 54,
+        "time_ms": 607.72,
+        "win_rate": 1.0,
+        "nodes": 57,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 607.81
+      },
+      "coord": [
+        8,
+        3
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 606.3,
+      "ai": {
+        "sims": 51,
+        "time_ms": 606.26,
+        "win_rate": 1.0,
+        "nodes": 56,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 606.34
+      },
+      "coord": [
+        7,
+        7
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 604.23,
+      "ai": {
+        "sims": 50,
+        "time_ms": 604.18,
+        "win_rate": 1.0,
+        "nodes": 55,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 604.38
+      },
+      "coord": [
+        1,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 613.58,
+      "ai": {
+        "sims": 48,
+        "time_ms": 613.52,
+        "win_rate": 1.0,
+        "nodes": 54,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 613.63
+      },
+      "coord": [
+        7,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 610.7,
+      "ai": {
+        "sims": 48,
+        "time_ms": 610.65,
+        "win_rate": 1.0,
+        "nodes": 53,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 610.74
+      },
+      "coord": [
+        6,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 608.1,
+      "ai": {
+        "sims": 44,
+        "time_ms": 608.05,
+        "win_rate": 1.0,
+        "nodes": 52,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 608.14
+      },
+      "coord": [
+        6,
+        2
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 605.7,
+      "ai": {
+        "sims": 42,
+        "time_ms": 605.66,
+        "win_rate": 1.0,
+        "nodes": 51,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 605.75
+      },
+      "coord": [
+        4,
+        2
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 613.11,
+      "ai": {
+        "sims": 38,
+        "time_ms": 613.07,
+        "win_rate": 1.0,
+        "nodes": 49,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 613.16
+      },
+      "coord": [
+        3,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 614.74,
+      "ai": {
+        "sims": 40,
+        "time_ms": 614.69,
+        "win_rate": 1.0,
+        "nodes": 49,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 614.79
+      },
+      "coord": [
+        4,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 618.47,
+      "ai": {
+        "sims": 37,
+        "time_ms": 618.42,
+        "win_rate": 1.0,
+        "nodes": 47,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 618.51
+      },
+      "coord": [
+        0,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 611.2,
+      "ai": {
+        "sims": 36,
+        "time_ms": 611.15,
+        "win_rate": 1.0,
+        "nodes": 46,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 611.34
+      },
+      "coord": [
+        3,
+        3
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 606.52,
+      "ai": {
+        "sims": 33,
+        "time_ms": 606.47,
+        "win_rate": 1.0,
+        "nodes": 44,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 606.57
+      },
+      "coord": [
+        8,
+        2
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 603.84,
+      "ai": {
+        "sims": 32,
+        "time_ms": 603.78,
+        "win_rate": 1.0,
+        "nodes": 44,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 603.89
+      },
+      "coord": [
+        5,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 615.6,
+      "ai": {
+        "sims": 32,
+        "time_ms": 615.54,
+        "win_rate": 1.0,
+        "nodes": 42,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 615.66
+      },
+      "coord": [
+        3,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 602.47,
+      "ai": {
+        "sims": 30,
+        "time_ms": 602.43,
+        "win_rate": 1.0,
+        "nodes": 42,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 602.51
+      },
+      "coord": [
+        8,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 616.03,
+      "ai": {
+        "sims": 29,
+        "time_ms": 615.98,
+        "win_rate": 1.0,
+        "nodes": 40,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 616.08
+      },
+      "coord": [
+        0,
+        7
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 604.42,
+      "ai": {
+        "sims": 27,
+        "time_ms": 604.38,
+        "win_rate": 1.0,
+        "nodes": 40,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 604.47
+      },
+      "coord": [
+        8,
+        8
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 605.51,
+      "ai": {
+        "sims": 27,
+        "time_ms": 605.46,
+        "win_rate": 1.0,
+        "nodes": 38,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 605.56
+      },
+      "coord": [
+        2,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 609.26,
+      "ai": {
+        "sims": 29,
+        "time_ms": 609.22,
+        "win_rate": 1.0,
+        "nodes": 38,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 609.31
+      },
+      "coord": [
+        2,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 603.21,
+      "ai": {
+        "sims": 26,
+        "time_ms": 603.17,
+        "win_rate": 1.0,
+        "nodes": 36,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 603.26
+      },
+      "coord": [
+        2,
+        7
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 601.2,
+      "ai": {
+        "sims": 25,
+        "time_ms": 601.16,
+        "win_rate": 1.0,
+        "nodes": 36,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 601.25
+      },
+      "coord": [
+        1,
+        2
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 620.82,
+      "ai": {
+        "sims": 24,
+        "time_ms": 620.78,
+        "win_rate": 1.0,
+        "nodes": 34,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 620.88
+      },
+      "coord": [
+        1,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 603.15,
+      "ai": {
+        "sims": 24,
+        "time_ms": 603.1,
+        "win_rate": 1.0,
+        "nodes": 34,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 603.21
+      },
+      "coord": [
+        6,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 605.79,
+      "ai": {
+        "sims": 24,
+        "time_ms": 605.74,
+        "win_rate": 1.0,
+        "nodes": 32,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 605.84
+      },
+      "coord": [
+        7,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 604.32,
+      "ai": {
+        "sims": 22,
+        "time_ms": 604.25,
+        "win_rate": 1.0,
+        "nodes": 31,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 604.39
+      },
+      "coord": [
+        1,
+        8
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 627.38,
+      "ai": {
+        "sims": 23,
+        "time_ms": 627.32,
+        "win_rate": 1.0,
+        "nodes": 30,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 627.45
+      },
+      "coord": [
+        6,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 620.24,
+      "ai": {
+        "sims": 24,
+        "time_ms": 620.19,
+        "win_rate": 1.0,
+        "nodes": 29,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 620.3
+      },
+      "coord": [
+        7,
+        3
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 613.26,
+      "ai": {
+        "sims": 22,
+        "time_ms": 613.21,
+        "win_rate": 1.0,
+        "nodes": 28,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 613.35
+      },
+      "coord": [
+        4,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 626.01,
+      "ai": {
+        "sims": 24,
+        "time_ms": 625.95,
+        "win_rate": 1.0,
+        "nodes": 27,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 626.07
+      },
+      "coord": [
+        6,
+        7
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 600.85,
+      "ai": {
+        "sims": 24,
+        "time_ms": 600.79,
+        "win_rate": 1.0,
+        "nodes": 26,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 600.92
+      },
+      "coord": [
+        5,
+        2
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 621.06,
+      "ai": {
+        "sims": 23,
+        "time_ms": 621.02,
+        "win_rate": 1.0,
+        "nodes": 25,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 621.13
+      },
+      "coord": [
+        3,
+        2
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 1,
+      "tiempo_ms": 624.0,
+      "ai": {
+        "sims": 23,
+        "time_ms": 623.94,
+        "win_rate": 1.0,
+        "nodes": 25,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 624.07
+      },
+      "coord": [
+        5,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 600.47,
+      "ai": {
+        "sims": 21,
+        "time_ms": 600.43,
+        "win_rate": 1.0,
+        "nodes": 23,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 600.56
+      },
+      "coord": [
+        4,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 616.87,
+      "ai": {
+        "sims": 21,
+        "time_ms": 616.82,
+        "win_rate": 1.0,
+        "nodes": 25,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 616.93
+      },
+      "coord": [
+        3,
+        8
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 614.14,
+      "ai": {
+        "sims": 20,
+        "time_ms": 614.08,
+        "win_rate": 1.0,
+        "nodes": 21,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 614.22
+      },
+      "coord": [
+        3,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 609.94,
+      "ai": {
+        "sims": 23,
+        "time_ms": 609.9,
+        "win_rate": 1.0,
+        "nodes": 23,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 610.01
+      },
+      "coord": [
+        5,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 618.09,
+      "ai": {
+        "sims": 26,
+        "time_ms": 618.04,
+        "win_rate": 1.0,
+        "nodes": 140,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 618.18
+      },
+      "coord": [
+        8,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 1,
+      "tiempo_ms": 604.66,
+      "ai": {
+        "sims": 25,
+        "time_ms": 604.61,
+        "win_rate": 0.5,
+        "nodes": 88,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 604.75
+      },
+      "coord": [
+        4,
+        7
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 616.98,
+      "ai": {
+        "sims": 24,
+        "time_ms": 616.95,
+        "win_rate": 1.0,
+        "nodes": 132,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 617.07
+      },
+      "coord": [
+        1,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 1,
+      "tiempo_ms": 625.75,
+      "ai": {
+        "sims": 19,
+        "time_ms": 625.7,
+        "win_rate": 1.0,
+        "nodes": 20,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 625.82
+      },
+      "coord": [
+        8,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 1,
+      "tiempo_ms": 611.23,
+      "ai": {
+        "sims": 20,
+        "time_ms": 611.18,
+        "win_rate": 1.0,
+        "nodes": 53,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 611.29
+      },
+      "coord": [
+        0,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 604.94,
+      "ai": {
+        "sims": 23,
+        "time_ms": 604.88,
+        "win_rate": 0.5,
+        "nodes": 100,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 605.02
+      },
+      "coord": [
+        3,
+        7
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 612.15,
+      "ai": {
+        "sims": 20,
+        "time_ms": 612.1,
+        "win_rate": 1.0,
+        "nodes": 50,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 612.23
+      },
+      "coord": [
+        5,
+        8
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 1,
+      "tiempo_ms": 609.07,
+      "ai": {
+        "sims": 28,
+        "time_ms": 609.02,
+        "win_rate": 0.5,
+        "nodes": 184,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 609.2
+      },
+      "coord": [
+        0,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 602.01,
+      "ai": {
+        "sims": 22,
+        "time_ms": 601.96,
+        "win_rate": 1.0,
+        "nodes": 111,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 602.08
+      },
+      "coord": [
+        8,
+        7
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 1,
+      "tiempo_ms": 604.63,
+      "ai": {
+        "sims": 23,
+        "time_ms": 604.57,
+        "win_rate": 0.6667,
+        "nodes": 88,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 604.7
+      },
+      "coord": [
+        0,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 602.47,
+      "ai": {
+        "sims": 24,
+        "time_ms": 602.44,
+        "win_rate": 1.0,
+        "nodes": 148,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 602.58
+      },
+      "coord": [
+        6,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 609.35,
+      "ai": {
+        "sims": 21,
+        "time_ms": 609.29,
+        "win_rate": 1.0,
+        "nodes": 64,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 609.46
+      },
+      "coord": [
+        6,
+        3
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 625.25,
+      "ai": {
+        "sims": 33,
+        "time_ms": 625.19,
+        "win_rate": 1.0,
+        "nodes": 167,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 625.34
+      },
+      "coord": [
+        0,
+        3
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 606.23,
+      "ai": {
+        "sims": 35,
+        "time_ms": 606.19,
+        "win_rate": 0.3333,
+        "nodes": 146,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 606.28
+      },
+      "coord": [
+        0,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 623.56,
+      "ai": {
+        "sims": 28,
+        "time_ms": 623.53,
+        "win_rate": 1.0,
+        "nodes": 115,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 623.65
+      },
+      "coord": [
+        1,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 601.59,
+      "ai": {
+        "sims": 22,
+        "time_ms": 601.55,
+        "win_rate": 0.6667,
+        "nodes": 113,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 601.65
+      },
+      "coord": [
+        8,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 5,
+      "tiempo_ms": 635.98,
+      "ai": {
+        "sims": 22,
+        "time_ms": 635.94,
+        "win_rate": 1.0,
+        "nodes": 78,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 636.04
+      },
+      "coord": [
+        2,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 621.38,
+      "ai": {
+        "sims": 27,
+        "time_ms": 621.35,
+        "win_rate": 1.0,
+        "nodes": 156,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 621.49
+      },
+      "coord": [
+        1,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 661.88,
+      "ai": {
+        "sims": 28,
+        "time_ms": 661.84,
+        "win_rate": 1.0,
+        "nodes": 111,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 661.93
+      },
+      "coord": [
+        0,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 600.2,
+      "ai": {
+        "sims": 38,
+        "time_ms": 600.15,
+        "win_rate": 0.5,
+        "nodes": 98,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 600.28
+      },
+      "coord": [
+        2,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 603.73,
+      "ai": {
+        "sims": 27,
+        "time_ms": 603.68,
+        "win_rate": 0.6667,
+        "nodes": 81,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 603.87
+      },
+      "coord": [
+        2,
+        1
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 631.04,
+      "ai": {
+        "sims": 36,
+        "time_ms": 631.0,
+        "win_rate": 0.625,
+        "nodes": 69,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 631.15
+      },
+      "coord": [
+        7,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 613.17,
+      "ai": {
+        "sims": 38,
+        "time_ms": 613.12,
+        "win_rate": 0.9,
+        "nodes": 76,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 613.32
+      },
+      "coord": [
+        3,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 613.11,
+      "ai": {
+        "sims": 42,
+        "time_ms": 613.08,
+        "win_rate": 0.5,
+        "nodes": 57,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 613.21
+      },
+      "coord": [
+        7,
+        2
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 1,
+      "tiempo_ms": 604.79,
+      "ai": {
+        "sims": 27,
+        "time_ms": 604.74,
+        "win_rate": 0.875,
+        "nodes": 39,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 604.88
+      },
+      "coord": [
+        2,
+        3
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 620.12,
+      "ai": {
+        "sims": 26,
+        "time_ms": 620.07,
+        "win_rate": 0.5556,
+        "nodes": 62,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 620.21
+      },
+      "coord": [
+        0,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 1,
+      "tiempo_ms": 617.01,
+      "ai": {
+        "sims": 28,
+        "time_ms": 616.97,
+        "win_rate": 0.875,
+        "nodes": 82,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 617.11
+      },
+      "coord": [
+        0,
+        0
+      ]
+    },
+    {
+      "tipo": "pase",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 631.98,
+      "ai": {
+        "sims": 23,
+        "time_ms": 631.93,
+        "win_rate": 0.5,
+        "nodes": 47,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 632.03
+      },
+      "coord": null
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 600.22,
+      "ai": {
+        "sims": 31,
+        "time_ms": 600.19,
+        "win_rate": 0.75,
+        "nodes": 60,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 600.37
+      },
+      "coord": [
+        1,
+        0
+      ]
+    },
+    {
+      "tipo": "pase",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 617.13,
+      "ai": {
+        "sims": 21,
+        "time_ms": 617.09,
+        "win_rate": 0.4286,
+        "nodes": 58,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 617.18
+      },
+      "coord": null
+    },
+    {
+      "tipo": "pase",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 627.28,
+      "ai": {
+        "sims": 25,
+        "time_ms": 627.25,
+        "win_rate": 0.9286,
+        "nodes": 79,
+        "config": "mcts-800",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 627.35
+      },
+      "coord": null
+    }
+  ],
+  "resultado": {
+    "territorio": {
+      "1": 1,
+      "2": 0
+    },
+    "piedras": {
+      "1": 41,
+      "2": 36
+    },
+    "totales": {
+      "negro": 42,
+      "blanco": 43.5
+    },
+    "komi": 7.5,
+    "ganador": 2,
+    "margen": 1.5,
+    "por_rendicion": false,
+    "movimientos": 93
+  }
+}

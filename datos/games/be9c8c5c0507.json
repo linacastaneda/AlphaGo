@@ -1,0 +1,173 @@
+{
+  "id": "be9c8c5c0507",
+  "board_size": 9,
+  "komi": 7.5,
+  "fecha": "2026-08-10T23:50:19.949741+00:00",
+  "jugadores": {
+    "B": "humano",
+    "W": "humano"
+  },
+  "config": {
+    "simulaciones": 250,
+    "modo": "pvp",
+    "tiempo_limite_ms": 5000,
+    "id": "be9c8c5c0507"
+  },
+  "movimientos": [
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 1638.86,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.11
+      },
+      "coord": [
+        4,
+        2
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 1664.14,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.1
+      },
+      "coord": [
+        3,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 1767.08,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.1
+      },
+      "coord": [
+        4,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 1135.3,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.11
+      },
+      "coord": [
+        4,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 769.92,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.11
+      },
+      "coord": [
+        4,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 913.88,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.11
+      },
+      "coord": [
+        3,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 955.58,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.11
+      },
+      "coord": [
+        3,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 879.58,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.12
+      },
+      "coord": [
+        2,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 751.48,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.1
+      },
+      "coord": [
+        2,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 772.27,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.11
+      },
+      "coord": [
+        2,
+        4
+      ]
+    }
+  ],
+  "resultado": {
+    "ganador": 2,
+    "por_rendicion": true,
+    "margen": null
+  }
+}

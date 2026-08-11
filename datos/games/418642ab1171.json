@@ -1,0 +1,137 @@
+{
+  "id": "418642ab1171",
+  "board_size": 9,
+  "komi": 7.5,
+  "fecha": "2026-08-10T23:47:12.636864+00:00",
+  "jugadores": {
+    "B": "humano",
+    "W": "mcts-250"
+  },
+  "config": {
+    "simulaciones": 250,
+    "modo": "vs_ia",
+    "tiempo_limite_ms": 5000,
+    "id": "418642ab1171"
+  },
+  "movimientos": [
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 2775.79,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.13
+      },
+      "coord": [
+        3,
+        5
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 1250.66,
+      "ai": {
+        "sims": 250,
+        "time_ms": 1155.08,
+        "win_rate": 0.25,
+        "nodes": 6563,
+        "config": "mcts-250",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 1250.8
+      },
+      "coord": [
+        4,
+        0
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 4708.79,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.11
+      },
+      "coord": [
+        4,
+        6
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 1224.34,
+      "ai": {
+        "sims": 250,
+        "time_ms": 1224.26,
+        "win_rate": 0.4,
+        "nodes": 6243,
+        "config": "mcts-250",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 1224.44
+      },
+      "coord": [
+        2,
+        2
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 2994.2,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.12
+      },
+      "coord": [
+        4,
+        4
+      ]
+    },
+    {
+      "tipo": "jugada",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 1404.8,
+      "ai": {
+        "sims": 250,
+        "time_ms": 1404.74,
+        "win_rate": 0.5,
+        "nodes": 5931,
+        "config": "mcts-250",
+        "policy_confidence": null,
+        "value_estimate": null
+      },
+      "perf": {
+        "api_ms": 1404.91
+      },
+      "coord": [
+        2,
+        5
+      ]
+    }
+  ],
+  "resultado": {
+    "ganador": 2,
+    "por_rendicion": true,
+    "margen": null
+  }
+}

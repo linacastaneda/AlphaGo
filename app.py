@@ -9,11 +9,11 @@ from threading import Lock
 
 from flask import Flask, g, jsonify, request, send_from_directory
 
-from ai.mcts import crear_mcts
-from ai.rival_lina import es_config_lina
-from engine import NEGRO, BLANCO, color_a_simbolo, simbolo_a_color
-from engine.scoring import Partida
-from storage import perf, store
+from ia.mcts import crear_mcts
+from ia.rival_lina import es_config_lina
+from motor import NEGRO, BLANCO, color_a_simbolo, simbolo_a_color
+from motor.scoring import Partida
+from almacenamiento import perf, store
 
 RUTA_BASE = store.RUTA_BASE
 MODOS = {"pvp", "vs_ia", "ia_ia", "duelo"}
@@ -106,10 +106,15 @@ def crear_app(prueba: bool = False) -> Flask:
         if modo == "duelo":
             tiempo_limite = min(tiempo_limite, 2000)
 
+        # Red de seguridad: si las IA se estancan sin cerrar por doble pase,
+        # el servidor fuerza la finalización al llegar a este límite.
+        limite_movimientos = max(2, int(cuerpo.get("limite_movimientos", 360)))
+
         config = {
             "simulaciones": simulaciones,
             "modo": modo,
             "tiempo_limite_ms": tiempo_limite,
+            "limite_movimientos": limite_movimientos,
         }
         jugadores = {NEGRO: jugador_negro, BLANCO: jugador_blanco}
 
@@ -147,6 +152,7 @@ def crear_app(prueba: bool = False) -> Flask:
         sesion.partida.agregar_metadatos_ultimo_movimiento(
             {"tiempo_ms": tiempo_ms})
         _enriquecer_perf(sesion)
+        _forzar_limite(sesion)
         return _respuesta_movimiento(sesion, info)
 
     @app.post("/api/game/<identificador>/pass")
@@ -156,6 +162,7 @@ def crear_app(prueba: bool = False) -> Flask:
         sesion.partida.pasar()
         sesion.partida.agregar_metadatos_ultimo_movimiento(
             {"tiempo_ms": tiempo_ms, "perf": {"api_ms": _tiempo_ultima_api()}})
+        _forzar_limite(sesion)
         return _respuesta_movimiento(sesion, {"tipo": "pase"})
 
     @app.post("/api/game/<identificador>/resign")
@@ -185,7 +192,7 @@ def crear_app(prueba: bool = False) -> Flask:
         inicio = time.perf_counter()
 
         if es_config_lina(config_ia):
-            from ai.rival_lina import crear_rival
+            from ia.rival_lina import crear_rival
             jugador = crear_rival(
                 simulaciones=int(config_ia.split("-")[1]),
                 tiempo_limite_ms=sesion.config.get("tiempo_limite_ms"))
@@ -220,6 +227,7 @@ def crear_app(prueba: bool = False) -> Flask:
             "nodes": resultado["nodes"],
             "win_rate": resultado["win_rate"],
         })
+        _forzar_limite(sesion)
         _enriquecer_perf(sesion)
         return _respuesta_movimiento(sesion, info or {"tipo": "pase"})
 
@@ -267,12 +275,36 @@ def crear_app(prueba: bool = False) -> Flask:
         limite_movimientos = int(cuerpo.get("limite_movimientos", 360))
 
         inicio = time.perf_counter()
-        from ai.experimento import experimento
+        from ia.experimento import experimento
         datos = experimento(negro, blanco, partidas=partidas,
                             tiempo_limite_ms=tiempo_limite_ms,
                             limite_movimientos=limite_movimientos)
         datos["tiempo_total_ms"] = round((time.perf_counter() - inicio) * 1000, 2)
         perf.registrar_medicion({"tipo": "experimento", **datos})
+        return jsonify(datos)
+
+    @app.post("/api/ai/torneo")
+    def _torneo():
+        """Torneo round-robin paralelo entre configuraciones de IA."""
+        cuerpo = request.get_json(silent=True) or {}
+        configs = cuerpo.get("configs") or None
+        partidas = max(1, min(12, int(cuerpo.get("partidas", 4))))
+        tamano = int(cuerpo.get("tamano", 7))
+        if tamano not in (5, 7, 9):
+            return jsonify({"error": "tamano debe ser 5, 7 o 9"}), 400
+        tiempo_limite_ms = int(cuerpo.get("tiempo_limite_ms", 700))
+        procesos = cuerpo.get("procesos")
+
+        for config in (configs or []):
+            if not (config.startswith("mcts-") or config.startswith("lina-") or config == "aleatorio"):
+                return jsonify({"error": f"configuración inválida: {config}"}), 400
+
+        inicio = time.perf_counter()
+        from ia.torneo import torneo
+        datos = torneo(configs=configs, partidas=partidas, tamano=tamano,
+                       tiempo_limite_ms=tiempo_limite_ms, procesos=procesos)
+        datos["tiempo_total_ms"] = round((time.perf_counter() - inicio) * 1000, 2)
+        perf.registrar_medicion({"tipo": "torneo", **datos})
         return jsonify(datos)
 
     @app.get("/api/metrics")
@@ -304,6 +336,16 @@ def _tiempo_ultima_api() -> float:
 def _enriquecer_perf(sesion: SesionPartida) -> None:
     sesion.partida.agregar_metadatos_ultimo_movimiento(
         {"perf": {"api_ms": _tiempo_ultima_api()}})
+
+
+def _forzar_limite(sesion: SesionPartida) -> None:
+    """Finaliza la partida si se alcanzó el límite de movimientos configurado."""
+    partida = sesion.partida
+    if partida.terminada:
+        return
+    limite = int(sesion.config.get("limite_movimientos", 360))
+    if len(partida.movimientos) >= limite:
+        partida.finalizar()
 
 
 def _respuesta_movimiento(sesion: SesionPartida, info) -> Flask.response_class:

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/estilo.css">
 </head>
 <body>
   <header class="cabecera contenedor">
@@ -231,6 +231,21 @@
           </div>
         </div>
       </div>
+      <div class="tarjeta-modulo">
+        <div class="tarjeta__cabecera">
+          <h2 class="tarjeta__titulo">Torneo IA</h2>
+          <button class="boton" id="btn-torneo" type="button">Correr torneo (7x7)</button>
+        </div>
+        <div class="tarjeta__cuerpo">
+          <p class="mono tarjeta-analisis__nota" id="torneo-estado">Partidas rápidas en paralelo entre MCTS y Lina.</p>
+          <div style="overflow-x:auto">
+            <table class="tabla" id="tabla-torneo">
+              <thead><tr><th>Config</th><th>V</th><th>D</th><th>E</th><th>Vict.(%)</th><th>Margen</th><th>ms/jug</th><th>sims/s</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
       <div class="graficas">
         <div class="tarjeta-modulo">
           <div class="tarjeta__cabecera"><h2 class="tarjeta__titulo">Tasa de victorias</h2></div>
@@ -263,10 +278,10 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="/js/ui.js"></script>
-  <script src="/js/board.js"></script>
-  <script src="/js/game.js"></script>
-  <script src="/js/replay.js"></script>
-  <script src="/js/metrics.js"></script>
+  <script src="/js/interfaz.js"></script>
+  <script src="/js/tablero.js"></script>
+  <script src="/js/juego.js"></script>
+  <script src="/js/repeticion.js"></script>
+  <script src="/js/metricas.js"></script>
 </body>
 </html>

@@ -1,0 +1,61 @@
+{
+  "id": "394956886dd5",
+  "board_size": 9,
+  "komi": 7.5,
+  "fecha": "2026-08-10T22:01:47.435359+00:00",
+  "jugadores": {
+    "B": "humano",
+    "W": "humano"
+  },
+  "config": {
+    "simulaciones": 250,
+    "modo": "pvp",
+    "tiempo_limite_ms": 5000,
+    "id": "394956886dd5"
+  },
+  "movimientos": [
+    {
+      "tipo": "pase",
+      "color": "B",
+      "player": "B",
+      "capturas": 0,
+      "tiempo_ms": 1.39,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.05
+      },
+      "coord": null
+    },
+    {
+      "tipo": "pase",
+      "color": "W",
+      "player": "W",
+      "capturas": 0,
+      "tiempo_ms": 0.78,
+      "ai": null,
+      "perf": {
+        "api_ms": 0.26
+      },
+      "coord": null
+    }
+  ],
+  "resultado": {
+    "territorio": {
+      "1": 0,
+      "2": 0
+    },
+    "piedras": {
+      "1": 0,
+      "2": 0
+    },
+    "totales": {
+      "negro": 0,
+      "blanco": 7.5
+    },
+    "komi": 7.5,
+    "ganador": 2,
+    "margen": 7.5,
+    "por_rendicion": false,
+    "movimientos": 2
+  }
+}

@@ -99,6 +99,6 @@ def test_construir_ia_lina_desconocida():
 
 def test_mcts_lina_no_depende_de_backend():
     import ia.mcts_lina
-    assert "backend" not in dir(ai.mcts_lina)
+    assert "backend" not in dir(ia.mcts_lina)
     import ia.rival_lina
-    assert "backend" not in dir(ai.rival_lina)
+    assert "backend" not in dir(ia.rival_lina)

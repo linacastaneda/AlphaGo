@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AlphaGo Telemetry</title>
+  <title>AlphaGo Web</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,12 +12,13 @@
 <body>
   <header class="cabecera contenedor">
     <div class="cabecera__marca">
-      <h1 class="cabecera__titulo">AlphaGo Telemetry</h1>
+      <h1 class="cabecera__titulo">AlphaGo Web</h1>
     </div>
     <nav class="cabecera__nav" id="navegacion">
       <button class="nav__boton activo" data-pestana="partida">Partida</button>
-      <button class="nav__boton" data-pestana="replay">Replay</button>
+      <button class="nav__boton" data-pestana="replay">Repetición</button>
       <button class="nav__boton" data-pestana="metricas">Métricas</button>
+      <button class="nav__boton nav__boton--icono" id="boton-sonido" title="Desactivar sonido">🔊</button>
     </nav>
   </header>
 
@@ -57,8 +58,9 @@
                   <label for="select-modo">Modo</label>
                   <select id="select-modo" class="mono-select">
                     <option value="vs_ia">Humano vs IA</option>
-                    <option value="pvp">Local PvP</option>
+                    <option value="pvp">PvP Local</option>
                     <option value="ia_ia">IA vs IA</option>
+                    <option value="duelo">Duelo MCTS vs Lina</option>
                   </select>
                 </div>
                 <div class="campo">
@@ -67,6 +69,24 @@
                     <option value="250">250 (Rápido)</option>
                     <option value="800" selected>800 (Estándar)</option>
                     <option value="2000">2000 (Profundo)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="campo-grupo duelo-opciones" id="duelo-opciones">
+                <div class="campo">
+                  <label for="select-duelo-negro">Negro (●)</label>
+                  <select id="select-duelo-negro" class="mono-select">
+                    <option value="mcts" selected>MCTS estándar</option>
+                    <option value="lina">MCTS de Lina</option>
+                    <option value="humano">Humano</option>
+                  </select>
+                </div>
+                <div class="campo">
+                  <label for="select-duelo-blanco">Blanco (○)</label>
+                  <select id="select-duelo-blanco" class="mono-select">
+                    <option value="mcts" selected>MCTS estándar</option>
+                    <option value="lina">MCTS de Lina</option>
+                    <option value="humano">Humano</option>
                   </select>
                 </div>
               </div>
@@ -94,13 +114,13 @@
 
           <div class="tarjeta-modulo tarjeta-ia">
             <div class="tarjeta__cabecera">
-              <h3 class="tarjeta__titulo">Telemetría MCTS</h3>
+              <h3 class="tarjeta__titulo">Métricas MCTS</h3>
             </div>
             <div class="tarjeta__cuerpo">
               <dl class="kpis">
                 <div class="kpi"><dt>Nodos</dt><dd class="mono" id="ia-nodos">—</dd></div>
                 <div class="kpi"><dt>Tiempo (ms)</dt><dd class="mono" id="ia-tiempo">—</dd></div>
-                <div class="kpi"><dt>Win-rate (%)</dt><dd class="mono" id="ia-winrate">—</dd></div>
+                <div class="kpi"><dt>Victorias (%)</dt><dd class="mono" id="ia-winrate">—</dd></div>
               </dl>
               <div class="barra-win">
                 <span class="barra-win__relleno" id="barra-winrate"></span>
@@ -125,46 +145,65 @@
             <button class="boton" id="boton-paso-ia">Jugar IA</button>
           </div>
           <p class="msg" id="mensaje">Sistema preparado.</p>
-          <a class="msg__enlace oculta" id="enlace-replay" href="#replay">Ver partida en Replay</a>
+          <a class="msg__enlace oculta" id="enlace-replay" href="#replay">Ver partida en Repetición</a>
         </aside>
       </div>
     </section>
 
     <!-- ══════════════ REPLAY ══════════════ -->
     <section class="pestana oculta" id="pestana-replay">
-      <div class="grid-replay">
-        <div class="tarjeta-modulo lista-partidas">
-          <div class="tarjeta__cabecera">
-            <h2 class="tarjeta__titulo">Registro de Partidas</h2>
+      <div class="barra-historial">
+        <div class="menu-historial" id="contenedor-historial">
+          <button class="boton boton-historial" id="boton-historial" type="button">
+            <span class="boton-historial__icono" aria-hidden="true">▤</span>
+            Historial de partidas
+            <span class="boton-historial__caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="menu-historial__panel oculta" id="menu-historial">
+            <div class="menu-historial__cabecera">
+              <span class="menu-historial__titulo">Historial</span>
+              <span class="menu-historial__contador mono" id="contador-historial">0</span>
+              <button class="menu-historial__cerrar" id="historial-cerrar" type="button" title="Cerrar">✕</button>
+            </div>
+            <input class="menu-historial__buscar" id="filtro-historial" type="search"
+                   placeholder="Busca por jugador, id o tamaño…" autocomplete="off">
+            <ul class="lista-sgf" id="lista-partidas"></ul>
           </div>
-          <ul class="lista-sgf" id="lista-partidas"></ul>
         </div>
-        <div class="visor tarjeta-modulo">
-          <div class="tarjeta__cuerpo">
-            <div class="marco-tablero marco-tablero--peque">
-              <svg id="tablero-replay" viewBox="0 0 760 760" role="img" aria-label="Tablero de replay"></svg>
-            </div>
-            <div class="controles-replay">
-              <button class="roboton" id="replay-inicio" title="Inicio">⏮</button>
-              <button class="roboton" id="replay-atras" title="Anterior">◀</button>
-              <button class="roboton" id="replay-play" title="Reproducir / pausa">▶</button>
-              <button class="roboton" id="replay-siguiente" title="Siguiente">▶</button>
-              <input type="range" id="replay-slider" min="0" max="0" value="0">
-              <label class="mono" id="replay-progreso">0/0</label>
-            </div>
-            <div class="campo">
-              <label for="replay-velocidad">Intervalo (ms)</label>
-              <select id="replay-velocidad" class="mono-select">
-                <option value="1800">1800</option>
-                <option value="900" selected>900</option>
-                <option value="350">350</option>
-              </select>
-            </div>
-            <div class="meta-movimiento mono" id="replay-meta">
-              <span id="replay-coord">—</span>
-              <span id="replay-capturas">—</span>
-              <span id="replay-ai">—</span>
-            </div>
+        <div class="historial-seleccion" id="historial-seleccion">
+          <span class="historial-seleccion__texto mono">Sin partida seleccionada</span>
+        </div>
+      </div>
+
+      <div class="visor tarjeta-modulo">
+        <div class="visor__cabecera">
+          <div class="visor__titulo" id="replay-titulo">Repetición de partida</div>
+          <div class="visor__sub mono" id="replay-sub">Elige una partida del historial para reproducirla.</div>
+        </div>
+        <div class="tarjeta__cuerpo">
+          <div class="marco-tablero marco-tablero--peque">
+            <svg id="tablero-replay" viewBox="0 0 760 760" role="img" aria-label="Tablero de repetición"></svg>
+          </div>
+          <div class="controles-replay">
+            <button class="roboton" id="replay-inicio" title="Inicio">⏮</button>
+            <button class="roboton" id="replay-atras" title="Anterior">◀</button>
+            <button class="roboton" id="replay-play" title="Reproducir / pausa">▶</button>
+            <button class="roboton" id="replay-siguiente" title="Siguiente">▶</button>
+            <input type="range" id="replay-slider" min="0" max="0" value="0">
+            <label class="mono" id="replay-progreso">0/0</label>
+          </div>
+          <div class="campo">
+            <label for="replay-velocidad">Intervalo (ms)</label>
+            <select id="replay-velocidad" class="mono-select">
+              <option value="1800">1800</option>
+              <option value="900" selected>900</option>
+              <option value="350">350</option>
+            </select>
+          </div>
+          <div class="meta-movimiento mono" id="replay-meta">
+            <span id="replay-coord">—</span>
+            <span id="replay-capturas">—</span>
+            <span id="replay-ai">—</span>
           </div>
         </div>
       </div>
@@ -177,7 +216,7 @@
           <div class="tarjeta__cabecera"><h2 class="tarjeta__titulo">Ranking</h2></div>
           <div class="tarjeta__cuerpo">
             <table class="tabla" id="tabla-rankings">
-              <thead><tr><th>Jugador</th><th>V</th><th>D</th><th>WR(%)</th></tr></thead>
+              <thead><tr><th>Jugador</th><th>V</th><th>D</th><th>Vict.(%)</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -194,7 +233,7 @@
       </div>
       <div class="graficas">
         <div class="tarjeta-modulo">
-          <div class="tarjeta__cabecera"><h2 class="tarjeta__titulo">Win-rate</h2></div>
+          <div class="tarjeta__cabecera"><h2 class="tarjeta__titulo">Tasa de victorias</h2></div>
           <div class="tarjeta__cuerpo">
             <canvas id="graf-winrate" height="220"></canvas>
           </div>
@@ -211,8 +250,8 @@
         <div class="tarjeta__cuerpo">
           <dl class="kpis">
             <div class="kpi"><dt>Transacciones</dt><dd class="mono" id="perf-total">—</dd></div>
-            <div class="kpi"><dt>Memoria Avg</dt><dd class="mono" id="perf-mem">—</dd></div>
-            <div class="kpi"><dt>Memoria Max</dt><dd class="mono" id="perf-memmax">—</dd></div>
+            <div class="kpi"><dt>Memoria Prom.</dt><dd class="mono" id="perf-mem">—</dd></div>
+            <div class="kpi"><dt>Memoria Máx.</dt><dd class="mono" id="perf-memmax">—</dd></div>
           </dl>
         </div>
       </div>

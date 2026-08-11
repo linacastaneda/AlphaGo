@@ -16,6 +16,9 @@
   const elems = {
     modo: document.getElementById("select-modo"),
     sims: document.getElementById("select-sims"),
+    dueloOpciones: document.getElementById("duelo-opciones"),
+    dueloNegro: document.getElementById("select-duelo-negro"),
+    dueloBlanco: document.getElementById("select-duelo-blanco"),
     botonNueva: document.getElementById("boton-nueva"),
     botonPasar: document.getElementById("boton-pasar"),
     botonRendirse: document.getElementById("boton-rendirse"),
@@ -128,7 +131,19 @@
 
   function nombre_jugador(color) {
     const simbolo = color === 1 ? "B" : "W";
-    return (estado.jugadores[simbolo] || "humano").replace(/^mcts-/, "MCTS ");
+    const config = estado.jugadores[simbolo] || "humano";
+    if (config === "humano") return "Humano";
+    if (config.startsWith("lina-")) return `Lina ${config.replace(/^lina-/, "")} sims`;
+    return config.replace(/^mcts-/, "MCTS ");
+  }
+
+  function jugador_en_turno() {
+    const simbolo = estado.turno === 1 ? "B" : "W";
+    return estado.jugadores[simbolo] || "humano";
+  }
+
+  function es_ia_en_turno() {
+    return /^(mcts|lina|alphago|ia)/.test(jugador_en_turno());
   }
 
   function ultimo_coord(estadoPartida) {
@@ -139,8 +154,16 @@
     return null;
   }
 
+  let movimientosAnteriores = 0;
+
   function renderizar(datos) {
     limpiar_analisis();
+    if (estado.id !== datos.id) {
+      movimientosAnteriores = datos.num_movimientos;
+    } else if (datos.num_movimientos > movimientosAnteriores && window.reproducirSonidoPiedra) {
+      window.reproducirSonidoPiedra();
+      movimientosAnteriores = datos.num_movimientos;
+    }
     estado.id = datos.id;
     estado.modo = datos.modo;
     estado.jugadores = datos.jugadores;
@@ -183,7 +206,7 @@
   }
 
   function nombre_modo(modo) {
-    return { pvp: "dos jugadores", vs_ia: "humano vs IA", ia_ia: "IA vs IA" }[modo] || modo;
+    return { pvp: "dos jugadores", vs_ia: "humano vs IA", ia_ia: "IA vs IA", duelo: "duelo MCTS vs Lina" }[modo] || modo;
   }
 
   function resultado_texto(resultado) {
@@ -222,6 +245,7 @@
     if (!estado.id || estado.terminada || estado.ocupado) return false;
     if (estado.modo === "pvp") return true;
     if (estado.modo === "vs_ia") return estado.turno === 1; // humano es negro
+    if (estado.modo === "duelo") return !es_ia_en_turno();
     return false; // ia_ia: ningún humano en el tablero principal
   }
 
@@ -248,9 +272,12 @@
       mostrar_enlace_replay(datos.id);
       return;
     }
-    // si ahora le toca a la IA (vs_ia con blanco o ia_ia), juega sola
-    if ((estado.modo === "vs_ia" && datos.turno === 2) || estado.modo === "ia_ia") {
-      if (estado.modo === "vs_ia") mensaje("La IA está pensando…");
+    // si ahora le toca a una IA, juega sola
+    const leTocaIa = (estado.modo === "vs_ia" && datos.turno === 2)
+      || estado.modo === "ia_ia"
+      || (estado.modo === "duelo" && es_ia_en_turno());
+    if (leTocaIa) {
+      mensaje(`La IA (${nombre_jugador(datos.turno)}) está pensando…`);
       window.setTimeout(movimiento_ia_automatico, 260);
     } else {
       mensaje("Coloca tu piedra en el tablero.");
@@ -275,19 +302,27 @@
     elems.botonNueva.disabled = true;
     mostrar_enlace_replay(null);
     try {
+      const cuerpo = {
+        modo: elems.modo.value,
+        simulaciones: elems.sims.value,
+      };
+      if (elems.modo.value === "duelo") {
+        cuerpo.jugador_negro = elems.dueloNegro.value === "humano"
+          ? "humano" : `${elems.dueloNegro.value}-${elems.sims.value}`;
+        cuerpo.jugador_blanco = elems.dueloBlanco.value === "humano"
+          ? "humano" : `${elems.dueloBlanco.value}-${elems.sims.value}`;
+      }
       const datos = await api("/api/game/new", {
         method: "POST",
-        body: JSON.stringify({
-          modo: elems.modo.value,
-          simulaciones: elems.sims.value,
-        }),
+        body: JSON.stringify(cuerpo),
       });
       renderizar(datos);
-      mensaje(estado.modo === "ia_ia"
-        ? "IA vs IA: pulsa «Siguiente jugada IA» para avanzar paso a paso."
-        : "Tablero listo. Coloca tu piedra.");
       if (estado.modo === "ia_ia") {
+        mensaje("IA vs IA: pulsa «Siguiente jugada IA» para avanzar paso a paso.");
         elems.botonPasoIa.disabled = false;
+      } else if (estado.modo === "duelo") {
+        mensaje(`Duelo: ${nombre_jugador(1)} vs ${nombre_jugador(2)}.`);
+        if (es_ia_en_turno()) window.setTimeout(movimiento_ia_automatico, 300);
       } else if (estado.modo === "vs_ia") {
         mensaje("Negro juega primero: coloca tu piedra.");
       }
@@ -297,6 +332,13 @@
       elems.botonNueva.disabled = false;
     }
   });
+
+  elems.modo.addEventListener("change", () => {
+    if (elems.dueloOpciones) {
+      elems.dueloOpciones.style.display = elems.modo.value === "duelo" ? "" : "none";
+    }
+  });
+  if (elems.dueloOpciones) elems.dueloOpciones.style.display = "none";
 
   elems.botonPasar.addEventListener("click", async () => {
     if (estado.ocupado || !estado.id) return;

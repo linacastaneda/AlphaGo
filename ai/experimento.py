@@ -10,6 +10,7 @@ import time
 from engine import BLANCO, NEGRO, color_a_simbolo
 from engine.scoring import Partida
 from .mcts import MCTS, crear_mcts
+from .rival_lina import RivalLina
 
 LIMITE_MOVIMIENTOS_POR_DEFECTO = 360
 
@@ -17,10 +18,17 @@ LIMITE_MOVIMIENTOS_POR_DEFECTO = 360
 def construir_ia(config: str, tiempo_limite_ms: int | None = None):
     """Devuelve una función ``(config) -> jugador`` que decide sobre una Partida.
 
-    ``config`` acepta: ``aleatorio``, ``mcts-<sims>`` o ``mcts-<sims>+red``.
+    ``config`` acepta: ``aleatorio``, ``mcts-<sims>``, ``mcts-<sims>+red``
+    o ``lina-<sims>`` (la MCTS de Lina, con handicap aplicado en su adaptador).
     """
     if config == "aleatorio":
         return lambda partida: _jugada_aleatoria(partida)
+
+    if config.startswith("lina-"):
+        simulaciones = int(config.split("-")[1])
+        rival = RivalLina(simulaciones=simulaciones,
+                          tiempo_limite_ms=tiempo_limite_ms)
+        return lambda partida: rival.mejor_jugada(partida)
 
     con_red = config.endswith("+red")
     base = config.removesuffix("+red")
@@ -106,7 +114,8 @@ def jugar_partida(jugador_negro, jugador_blanco, komi: float = 7.5,
 
 def experimento(config_negro: str, config_blanco: str, partidas: int = 10,
                 tiempo_limite_ms: int | None = None,
-                semilla: int | None = None) -> dict:
+                semilla: int | None = None,
+                limite_movimientos: int = LIMITE_MOVIMIENTOS_POR_DEFECTO) -> dict:
     """Juega ``partidas`` enfrentamientos y agrega victorias, empates y tiempos."""
     jugador_negro = construir_ia(config_negro, tiempo_limite_ms)
     jugador_blanco = construir_ia(config_blanco, tiempo_limite_ms)
@@ -120,7 +129,8 @@ def experimento(config_negro: str, config_blanco: str, partidas: int = 10,
     for i in range(partidas):
         resultado = jugar_partida(
             jugador_negro, jugador_blanco,
-            semilla=semilla + i if semilla is not None else None)
+            semilla=semilla + i if semilla is not None else None,
+            limite_movimientos=limite_movimientos)
         ganador = resultado["ganador"]
         if ganador is None:
             empates += 1
@@ -136,6 +146,8 @@ def experimento(config_negro: str, config_blanco: str, partidas: int = 10,
         return round(sum(lista) / len(lista), 2) if lista else 0.0
 
     def _media_sims(config):
+        if config.startswith("lina-"):
+            return int(config.split("-")[1])
         base = config.removesuffix("+red")
         return int(base.split("-")[1]) if base.startswith("mcts-") else 0
 

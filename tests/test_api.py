@@ -107,6 +107,68 @@ def test_ia_ia_juega_automatica(cliente):
     assert estado["num_movimientos"] >= 2
 
 
+def test_duelo_crea_jugadores_por_lado(cliente):
+    partida = cliente.post("/api/game/new", json={
+        "modo": "duelo", "simulaciones": "250",
+        "jugador_negro": "mcts-250", "jugador_blanco": "lina-250",
+    }).get_json()
+    assert partida["modo"] == "duelo"
+    assert partida["jugadores"]["B"] == "mcts-250"
+    assert partida["jugadores"]["W"] == "lina-250"
+
+
+def test_duelo_jugador_invalido_rechazado(cliente):
+    respuesta = cliente.post("/api/game/new", json={
+        "modo": "duelo", "simulaciones": "250",
+        "jugador_negro": "kata-800", "jugador_blanco": "mcts-250",
+    })
+    assert respuesta.status_code == 400
+
+
+def test_duelo_despacha_motor_por_color(cliente):
+    partida = cliente.post("/api/game/new", json={
+        "modo": "duelo", "simulaciones": "250",
+        "jugador_negro": "mcts-250", "jugador_blanco": "lina-250",
+        "tiempo_limite_ms": 2000,
+    }).get_json()
+    identificador = partida["id"]
+
+    cliente.post(f"/api/game/{identificador}/ai-move")
+    negro = cliente.get(f"/api/game/{identificador}").get_json()
+    assert negro["movimientos"][-1]["ai"]["config"].startswith("mcts-")
+
+    cliente.post(f"/api/game/{identificador}/ai-move")
+    blanco = cliente.get(f"/api/game/{identificador}").get_json()
+    assert blanco["movimientos"][-1]["ai"]["config"].startswith("lina-")
+
+
+def test_duelo_humano_en_cualquier_lado(cliente):
+    partida = cliente.post("/api/game/new", json={
+        "modo": "duelo", "simulaciones": "250",
+        "jugador_negro": "lina-250", "jugador_blanco": "humano",
+        "tiempo_limite_ms": 2000,
+    }).get_json()
+    identificador = partida["id"]
+    # negro es IA (Lina), blanco es humano
+    respuesta = cliente.post(f"/api/game/{identificador}/ai-move")
+    datos = respuesta.get_json()
+    assert datos["estado"]["movimientos"][-1]["ai"]["config"].startswith("lina-")
+    assert datos["estado"]["turno"] == 2
+
+
+def test_experimento_con_lina(cliente):
+    respuesta = cliente.post("/api/ai/experiment",
+                             json={"negro": "aleatorio", "blanco": "lina-30",
+                                   "partidas": 1, "tiempo_limite_ms": 1000,
+                                   "limite_movimientos": 12})
+    datos = respuesta.get_json()
+    assert respuesta.status_code == 200
+    assert datos["blanco"] == "lina-30"
+    assert datos["simulaciones"]["lina-30"] == 30
+    assert datos["tiempo_promedio_ms"]["lina-30"] > 0
+
+
+
 def test_analisis_posicion_sin_modificar_partida(cliente):
     partida = cliente.post(
         "/api/game/new", json={"modo": "pvp", "simulaciones": "250"}).get_json()
@@ -142,3 +204,43 @@ def test_experimento_ia(cliente):
     assert "tiempo_promedio_ms" in datos
     metricas = cliente.get("/api/metrics").get_json()
     assert metricas["experimentos"] and metricas["experimentos"][0]["partidas"] == 2
+
+
+def test_flujo_replay_lista_y_carga(cliente):
+    """El replay consume /api/games y /api/game/<id>: verifica su formato."""
+    partida = cliente.post("/api/game/new", json={"modo": "pvp"}).get_json()
+    identificador = partida["id"]
+    cliente.post(f"/api/game/{identificador}/move", json={"fila": 4, "col": 4})
+    cliente.post(f"/api/game/{identificador}/pass")
+    cliente.post(f"/api/game/{identificador}/pass")
+
+    lista = cliente.get("/api/games").get_json()["partidas"]
+    resumen = next((p for p in lista if p["id"] == identificador), None)
+    assert resumen is not None
+    assert resumen["tablero"] == 9
+    assert resumen["num_movimientos"] >= 2
+    assert resumen["jugadores"]["B"] == "humano"
+    assert resumen["ganador"] in ("B", "W")
+
+    detalle = cliente.get(f"/api/game/{identificador}").get_json()
+    assert detalle["id"] == identificador
+    assert detalle["board_size"] == 9
+    assert detalle["jugadores"]["B"] == "humano"
+    for mov in detalle["movimientos"]:
+        # el replay.js espera color como símbolo y coord como [fila, col]
+        assert mov["color"] in ("B", "W")
+        assert mov["player"] == mov["color"]
+
+
+def test_replay_partida_en_curso_devuelve_coordenadas(cliente):
+    """Una partida activa (sin guardar) también debe ser cargable por el replay."""
+    partida = cliente.post("/api/game/new", json={"modo": "vs_ia"}).get_json()
+    identificador = partida["id"]
+    cliente.post(f"/api/game/{identificador}/move", json={"fila": 4, "col": 4})
+
+    detalle = cliente.get(f"/api/game/{identificador}").get_json()
+    assert detalle["id"] == identificador
+    ultimo = detalle["movimientos"][-1]
+    # en sesión viva el color puede venir como entero; coord siempre [fila, col]
+    assert isinstance(ultimo["coord"], list) and len(ultimo["coord"]) == 2
+    assert ultimo["color"] in (1, 2, "B", "W")

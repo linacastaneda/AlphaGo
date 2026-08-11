@@ -10,12 +10,13 @@ from threading import Lock
 from flask import Flask, g, jsonify, request, send_from_directory
 
 from ai.mcts import crear_mcts
+from ai.rival_lina import es_config_lina
 from engine import NEGRO, BLANCO, color_a_simbolo, simbolo_a_color
 from engine.scoring import Partida
 from storage import perf, store
 
 RUTA_BASE = store.RUTA_BASE
-MODOS = {"pvp", "vs_ia", "ia_ia"}
+MODOS = {"pvp", "vs_ia", "ia_ia", "duelo"}
 PRESETS_SIMULACIONES = {"250": 250, "800": 800, "2000": 2000}
 
 PARTIDAS = {}
@@ -36,7 +37,8 @@ class SesionPartida:
         self.ultimo_evento = time.time()
 
     def es_ia(self, color: int) -> bool:
-        return str(self.jugadores.get(color, "")).startswith(("mcts", "alphago", "ia"))
+        return str(self.jugadores.get(color, "")).startswith(
+            ("mcts", "alphago", "ia", "lina"))
 
     def turno_actual(self):
         return self.partida.turno
@@ -98,10 +100,16 @@ def crear_app(prueba: bool = False) -> Flask:
         jugador_negro = cuerpo.get("jugador_negro") or "humano"
         jugador_blanco = cuerpo.get("jugador_blanco") or "humano"
 
+        tiempo_limite = int(cuerpo.get("tiempo_limite_ms", 5000))
+        # El MCTS de Lina es más lento por simulación: en duelo se usa un
+        # presupuesto menor por jugada para mantener partidas ágiles.
+        if modo == "duelo":
+            tiempo_limite = min(tiempo_limite, 2000)
+
         config = {
             "simulaciones": simulaciones,
             "modo": modo,
-            "tiempo_limite_ms": int(cuerpo.get("tiempo_limite_ms", 5000)),
+            "tiempo_limite_ms": tiempo_limite,
         }
         jugadores = {NEGRO: jugador_negro, BLANCO: jugador_blanco}
 
@@ -110,6 +118,16 @@ def crear_app(prueba: bool = False) -> Flask:
         elif modo == "ia_ia":
             jugadores[NEGRO] = f"mcts-{simulaciones}"
             jugadores[BLANCO] = f"mcts-{simulaciones}"
+        elif modo == "duelo":
+            for color, lado in ((NEGRO, jugador_negro), (BLANCO, jugador_blanco)):
+                if lado in (None, "humano"):
+                    jugadores[color] = "humano"
+                elif lado.startswith("lina-"):
+                    jugadores[color] = lado
+                elif lado.startswith("mcts-"):
+                    jugadores[color] = lado
+                else:
+                    return jsonify({"error": f"jugador inválido: {lado}"}), 400
 
         identificador = store.generar_id()
         partida = Partida(tamano, komi)
@@ -163,11 +181,19 @@ def crear_app(prueba: bool = False) -> Flask:
         color = sesion.turno_actual()
         cuerpo = request.get_json(silent=True) or {}
         simulaciones = int(cuerpo.get("simulaciones", sesion.config["simulaciones"]))
+        config_ia = sesion.jugadores.get(color, "")
         inicio = time.perf_counter()
 
-        mcts = crear_mcts(simulaciones=simulaciones,
-                          tiempo_limite_ms=sesion.config.get("tiempo_limite_ms"))
-        resultado = mcts.mejor_jugada(sesion.partida)
+        if es_config_lina(config_ia):
+            from ai.rival_lina import crear_rival
+            jugador = crear_rival(
+                simulaciones=int(config_ia.split("-")[1]),
+                tiempo_limite_ms=sesion.config.get("tiempo_limite_ms"))
+            resultado = jugador.mejor_jugada(sesion.partida)
+        else:
+            mcts = crear_mcts(simulaciones=simulaciones,
+                              tiempo_limite_ms=sesion.config.get("tiempo_limite_ms"))
+            resultado = mcts.mejor_jugada(sesion.partida)
         tiempo_total_ms = (time.perf_counter() - inicio) * 1000
 
         info = None
@@ -238,11 +264,13 @@ def crear_app(prueba: bool = False) -> Flask:
         blanco = cuerpo.get("blanco", "mcts-250")
         partidas = max(1, min(20, int(cuerpo.get("partidas", 2))))
         tiempo_limite_ms = int(cuerpo.get("tiempo_limite_ms", 1500))
+        limite_movimientos = int(cuerpo.get("limite_movimientos", 360))
 
         inicio = time.perf_counter()
         from ai.experimento import experimento
         datos = experimento(negro, blanco, partidas=partidas,
-                            tiempo_limite_ms=tiempo_limite_ms)
+                            tiempo_limite_ms=tiempo_limite_ms,
+                            limite_movimientos=limite_movimientos)
         datos["tiempo_total_ms"] = round((time.perf_counter() - inicio) * 1000, 2)
         perf.registrar_medicion({"tipo": "experimento", **datos})
         return jsonify(datos)

@@ -1,7 +1,7 @@
 /* Métricas: rankings, IA y latencia desde /api/metrics y /api/perf. */
 
 (() => {
-  const _set = (id, valor) => { const el = document.getElementById(id); if (el) el.textContent = valor ?? "—"; };
+  const _set = (id, valor) => { const el = document.getElementById(id); if (el) el.textContent = valor !== undefined && valor !== null ? valor : "—"; };
 
   async function cargar_metrics() {
     try {
@@ -17,7 +17,8 @@
   }
 
   function rendir_rankings(rankings) {
-    const cuerpoJ = (document.getElementById("tabla-rankings") || {}).querySelector?.("tbody");
+    const tabla = document.getElementById("tabla-rankings");
+    const cuerpoJ = tabla ? tabla.querySelector("tbody") : null;
     if (!cuerpoJ) return;
     const filas = rankings.slice().sort((a, b) => b.victorias - a.victorias);
     cuerpoJ.innerHTML = filas.length
@@ -29,7 +30,8 @@
   }
 
   function rendir_ia(estadisticas) {
-    const cuerpoI = (document.getElementById("tabla-ia") || {}).querySelector?.("tbody");
+    const tabla = document.getElementById("tabla-ia");
+    const cuerpoI = tabla ? tabla.querySelector("tbody") : null;
     if (!cuerpoI) return;
     if (!estadisticas.length) {
       cuerpoI.innerHTML = `<tr><td colspan="5">Sin datos de configuraciones IA</td></tr>`;
@@ -89,7 +91,7 @@
     const canvas = document.getElementById("graf-latencia");
     if (!canvas || typeof window.Chart === "undefined") return;
     const nombres = Object.keys(endpoints);
-    const p95 = nombres.map((n) => endpoints[n].p95_ms ?? 0);
+    const p95 = nombres.map((n) => endpoints[n].p95_ms !== undefined ? endpoints[n].p95_ms : 0);
     if (window._latChart) window._latChart.destroy();
     window._latChart = new window.Chart(canvas, {
       type: "bar",

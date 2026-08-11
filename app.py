@@ -107,8 +107,12 @@ def crear_app(prueba: bool = False) -> Flask:
             tiempo_limite = min(tiempo_limite, 2000)
 
         # Red de seguridad: si las IA se estancan sin cerrar por doble pase,
-        # el servidor fuerza la finalización al llegar a este límite.
-        limite_movimientos = max(2, int(cuerpo.get("limite_movimientos", 360)))
+        # el servidor fuerza la finalización al llegar a este límite. En modos
+        # con IA usamos un límite proporcional al tablero para no estirar la
+        # partida rellenando territorio de nadie.
+        limite_ia = max(30, tamano * tamano * 2)
+        limite_movimientos = max(2, int(cuerpo.get("limite_movimientos",
+                                                    limite_ia if modo in ("ia_ia", "duelo") else 360)))
 
         config = {
             "simulaciones": simulaciones,

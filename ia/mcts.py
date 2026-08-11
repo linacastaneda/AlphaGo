@@ -51,6 +51,18 @@ class MCTS:
     def _nombre_config(self) -> str:
         return f"mcts-{self.simulaciones}"
 
+    @staticmethod
+    def _tablero_saturado(partida) -> bool:
+        """True si el tablero está casi lleno: momento natural de pasar."""
+        tablero = partida.tablero
+        ocupadas = 0
+        total = tablero.tamano * tablero.tamano
+        for fila in tablero.celdas:
+            for celda in fila:
+                if celda != 0:
+                    ocupadas += 1
+        return ocupadas / total >= 0.92
+
     def mejor_jugada(self, partida) -> dict:
         """Calcula la mejor jugada para el jugador al turno.
 
@@ -65,6 +77,11 @@ class MCTS:
                     and hijo.q / max(1, hijo.visitas) > mejor.q / max(1, mejor.visitas)):
                 mejor = hijo
                 mejor_visitas = hijo.visitas
+
+        # En tableros casi llenos ya no hay territorio útil: pasar para que la
+        # partida termine por doble pase en lugar de rellenar a ciegas.
+        if mejor is not None and self._tablero_saturado(partida):
+            mejor = None
 
         es_pase = mejor is None or mejor.es_pase()
         win_rate = round(mejor.q / mejor.visitas, 4) if mejor and mejor.visitas else 0.0

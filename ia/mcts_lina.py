@@ -122,9 +122,23 @@ class MCTSLina:
     def _nombre_config(self) -> str:
         return f"mcts-l-{self.simulaciones}"
 
+    @staticmethod
+    def _tablero_saturado(partida) -> bool:
+        """True si el tablero está casi lleno: momento natural de pasar."""
+        tablero = partida.tablero
+        ocupadas = 0
+        total = tablero.tamano * tablero.tamano
+        for fila in tablero.celdas:
+            for celda in fila:
+                if celda != 0:
+                    ocupadas += 1
+        return ocupadas / total >= 0.92
+
     def mejor_jugada(self, partida) -> dict:
         inicio = time.perf_counter()
         decision, iteraciones, nodos = self._buscar(partida)
+        if decision is not None and self._tablero_saturado(partida):
+            decision = None
         tiempo_ms = (time.perf_counter() - inicio) * 1000
         es_pase = decision is None
         return {

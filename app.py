@@ -144,6 +144,8 @@ def crear_app(prueba: bool = False) -> Flask:
     @app.post("/api/game/<identificador>/move")
     def _jugar(identificador):
         sesion = _obtener_sesion(identificador)
+        if sesion.partida.terminada:
+            return jsonify(_estado_sesion(sesion))
         cuerpo = request.get_json(silent=True) or {}
         fila = int(cuerpo.get("fila", -1))
         col = int(cuerpo.get("col", -1))
@@ -158,6 +160,8 @@ def crear_app(prueba: bool = False) -> Flask:
     @app.post("/api/game/<identificador>/pass")
     def _pasar(identificador):
         sesion = _obtener_sesion(identificador)
+        if sesion.partida.terminada:
+            return jsonify(_estado_sesion(sesion))
         tiempo_ms = sesion.medir_tiempo_jugador()
         sesion.partida.pasar()
         sesion.partida.agregar_metadatos_ultimo_movimiento(
@@ -168,6 +172,8 @@ def crear_app(prueba: bool = False) -> Flask:
     @app.post("/api/game/<identificador>/resign")
     def _rendirse(identificador):
         sesion = _obtener_sesion(identificador)
+        if sesion.partida.terminada:
+            return jsonify(_estado_sesion(sesion))
         cuerpo = request.get_json(silent=True) or {}
         color = cuerpo.get("color")
         if color is not None:
@@ -323,7 +329,17 @@ def crear_app(prueba: bool = False) -> Flask:
 def _obtener_sesion(identificador: str) -> SesionPartida:
     sesion = PARTIDAS.get(identificador)
     if sesion is None:
-        raise FileNotFoundError(f"la partida {identificador} no existe")
+        # La partida ya se persistió (terminó): reconstruirla como sesión de
+        # solo lectura para que los endpoints posteriores no fallen con 404.
+        datos = store.cargar_partida(identificador)
+        partida = store.reconstruir_partida(datos)
+        sesion = SesionPartida(
+            identificador, partida,
+            datos.get("jugadores") or {},
+            (datos.get("config") or {}).get("modo", "vs_ia"),
+            {**(datos.get("config") or {}), "id": identificador,
+             "guardada": True, "persistida": True})
+        PARTIDAS[identificador] = sesion
     return sesion
 
 

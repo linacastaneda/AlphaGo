@@ -146,6 +146,17 @@
     return /^(mcts|alphago|ia)/.test(jugador_en_turno());
   }
 
+  function color_humano() {
+    // Devuelve el símbolo ("B"/"W") del jugador humano local para render,
+    // o null si no hay un humano claro en este modo.
+    const j = estado.jugadores || {};
+    if (estado.modo === "pvp") return estado.turno === 1 ? "B" : "W";
+    if (j.B === "humano" && j.W !== "humano") return "B"; // humano juega negro
+    if (j.W === "humano" && j.B !== "humano") return "W"; // humano juega blanco
+    if (j.B === "humano" && j.W === "humano") return estado.turno === 1 ? "B" : "W";
+    return null; // ia_ia / sin humano
+  }
+
   function ultimo_coord(estadoPartida) {
     const movs = estadoPartida.movimientos || [];
     for (let i = movs.length - 1; i >= 0; i--) {
@@ -212,10 +223,11 @@
   function resultado_texto(resultado) {
     if (!resultado) return "—";
     if (!resultado.ganador) return "empate";
-    const ganador = resultado.ganador === 1 ? "Negro" : "Blanco";
-    if (resultado.por_rendicion) return `${ganador} gana por rendición`;
-    const margen = resultado.margen != null ? ` por ${resultado.margen}` : "";
-    return `${ganador} gana${margen}`;
+    const color = resultado.ganador === 1 ? 1 : 2;
+    const jugador = nombre_jugador(color);
+    if (resultado.por_rendicion) return `¡${jugador} gana por rendición!`;
+    const margen = resultado.margen != null ? ` por ${resultado.margen} puntos` : "";
+    return `¡${jugador} gana${margen}!`;
   }
 
   function actualizar_kpi_ia(ai) {
@@ -268,7 +280,7 @@
     estado.ocupado = false;
     const datos = cuerpo.estado;
     if (datos.terminada) {
-      mensaje(`Partida finalizada. ${resultado_texto(datos.resultado)} (guardada como ${datos.id})`);
+      mensaje(`Listo, ${resultado_texto(datos.resultado)}`);
       mostrar_enlace_replay(datos.id);
       return;
     }
@@ -354,15 +366,20 @@
 
   elems.botonRendirse.addEventListener("click", async () => {
     if (!estado.id || !confirm("¿Confirmas la rendición?")) return;
+    const colorHumano = color_humano();
+    if (colorHumano === null) {
+      mensaje("No hay un jugador humano al que rendir en este modo.", true);
+      return;
+    }
     estado.ocupado = true;
     try {
-      const color = estado.turno === 1 ? "B" : "W";
       const datos = await api(`/api/game/${estado.id}/resign`, {
         method: "POST",
-        body: JSON.stringify({ color }),
+        body: JSON.stringify({ color: colorHumano }),
       });
       renderizar(datos);
-      mensaje(`Rendido. ${resultado_texto(datos.resultado)}`);
+      mensaje(`Listo, ${resultado_texto(datos.resultado)}`);
+      mostrar_enlace_replay(datos.id);
     } catch (err) {
       mensaje(err.message, true);
     } finally {

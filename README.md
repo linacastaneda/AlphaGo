@@ -461,7 +461,8 @@ y `benchmark_margen.png`, y guarda el resumen en `data/benchmark_roundrobin.json
 
 El repositorio incluye un blueprint `render.yaml`:
 
-- Servidor: `gunicorn app:app --bind 0.0.0.0:$PORT`
+- Servidor: `gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4`
+  (un solo worker: el estado de las partidas vive en memoria del proceso).
 - Instalación: `pip install -r requirements.txt`
 - `app.py` lee la variable de entorno `PORT` proporcionada por Render.
 

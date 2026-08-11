@@ -106,13 +106,21 @@ def resumen_perf() -> dict:
 
 
 def _persistir() -> None:
-    RUTA_LOG.parent.mkdir(parents=True, exist_ok=True)
-    with _cerrojo:
-        datos = list(_mediciones)
-    temporal = RUTA_LOG.with_suffix(".tmp")
-    with open(temporal, "w", encoding="utf-8") as archivo:
-        json.dump({"mediciones": datos}, archivo)
-    temporal.replace(RUTA_LOG)
+    """Escribe el log rodante a disco de forma tolerante a fallos.
+
+    La persistencia nunca debe interrumpir el request: en entornos con
+    filesystem efímero o de solo lectura (p. ej. Render) el fallo se ignora.
+    """
+    try:
+        RUTA_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with _cerrojo:
+            datos = list(_mediciones)
+        temporal = RUTA_LOG.with_suffix(".tmp")
+        with open(temporal, "w", encoding="utf-8") as archivo:
+            json.dump({"mediciones": datos}, archivo)
+        temporal.replace(RUTA_LOG)
+    except OSError:
+        pass
 
 
 def cargar_log() -> None:

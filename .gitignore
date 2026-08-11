@@ -11,3 +11,5 @@ performance_report.html
 # Datos de la aplicación en ejecución
 data/perf.json
 data/games/
+data/historial.json
+data/benchmark_roundrobin.json

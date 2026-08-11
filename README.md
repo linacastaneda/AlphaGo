@@ -11,6 +11,8 @@ Este proyecto desarrolla una aplicación capaz de jugar **Go**, inspirada en los
 
 El objetivo principal es implementar una aplicación que pueda jugar GO usando las reglas fundamentales del juego y  simular alphaGo en este usando solo **Monte Carlo Tree Search (MCTS)** sin redes neuronales de política (propone un movimiento) y valor (calcula el valor futuro de quedar en esa posición) tal y como es el AlphaGo.
 
+La aplicación incluye dos implementaciones de MCTS: una **heurística** con UCT y playouts guiados, y la **MCTS L** (el MCTS, con rollout aleatorio puro). Ambas pueden enfrentarse entre sí, contra un jugador aleatorio o contra una persona mediante la aplicación web.
+
 ---
 
 # 1. Estructura del proyecto
@@ -18,18 +20,27 @@ El objetivo principal es implementar una aplicación que pueda jugar GO usando l
 ```text
 AlphaGo/
 │
+├── app.py                    # Servidor Flask (API REST + frontend)
+├── motor/
+│   ├── board.py              # Tablero, grupos, libertades, capturas, ko
+│   └── scoring.py            # Fin de partida y conteo por área
+├── ia/
+│   ├── mcts.py               # MCTS + UCT (heurístico)
+│   ├── mcts_lina.py          # MCTS estilo académico (rollout aleatorio)
+│   ├── rival_lina.py         # Adaptador MCTS L (handicap de simulaciones)
+│   ├── experimento.py        # Duelos entre configuraciones de IA
+│   └── torneo.py             # Torneo round-robin paralelo
+├── almacenamiento/
+│   ├── store.py              # Persistencia JSON + rankings
+│   └── perf.py               # Métricas de rendimiento de la app
+├── static/                   # Frontend (tablero SVG, replay, dashboard)
+├── data/                     # Partidas, historial y SGF
+├── pruebas/                  # Suite de pruebas (pytest)
 ├── README.md
-│
-└── backend/
-    ├── motor_go.py
-    ├── ia_go.py
-    ├── test_go.py
-    ├── test_ia.py
-    ├── benchmark.py
-    └── graficas.py
+└── PLAN.md
 ```
 
-### `motor_go.py`
+### `motor/`
 
 Contiene la lógica principal del juego de Go:
 
@@ -48,25 +59,21 @@ Contiene la lógica principal del juego de Go:
 - Copia del estado del juego.
 - Cálculo de puntuación.
 
-### `ia_go.py`
+### `ia/mcts.py`
 
-Implementa el agente de inteligencia artificial mediante **Monte Carlo Tree Search (MCTS)**.
+Implementa el agente de inteligencia artificial mediante **Monte Carlo Tree Search (MCTS)** con UCT y playouts heurísticos.
 
-### `test_go.py`
+### `ia/mcts_lina.py` y `ia/rival_lina.py`
 
-Contiene las pruebas unitarias correspondientes al motor y las reglas del juego.
+Incluyen la implementación de **MCTS L** (el MCTS, con rollout aleatorio puro) y su adaptador, que aplica un handicap de simulaciones para duelos equilibrados.
 
-### `test_ia.py`
+### `ia/experimento.py` y `ia/torneo.py`
 
-Contiene pruebas para verificar el comportamiento básico de la inteligencia artificial, es decir el uso de MCTS.
+Permiten enfrentar configuraciones de IA (`aleatorio`, `mcts-<sims>`, `mcts-l-<sims>`), en duelos individuales o en torneos round-robin paralelos.
 
-### `benchmark.py`
+### `pruebas/`
 
-Ejecuta partidas experimentales entre la IA MCTS y un jugador que selecciona movimientos legales aleatoriamente.
-
-### `graficas.py`
-
-Genera las visualizaciones utilizadas para analizar los resultados obtenidos en el benchmark.
+Contiene las pruebas unitarias del motor, del MCTS, de la IA y de la API.
 
 ---
 
@@ -136,6 +143,53 @@ Cada nodo registra:
 
 Esto permite evaluar los resultados desde la perspectiva correspondiente a cada jugador.
 
+## 3.5 Diferencias de diseño entre las dos implementaciones de MCTS
+
+El proyecto contiene **dos** implementaciones independientes de MCTS, cada una
+con su propio árbol, heurística de simulación y estrategia de expansión. La
+diferencia central es *qué hace cada una durante la simulación (rollout)* y
+*cómo construye el árbol*.
+
+| Aspecto | MCTS heurístico (`ia/mcts.py`) | MCTS L (`ia/mcts_lina.py`) |
+|---|---:|---:|
+| **Rollout** | Playouts guiados (`ia/rollout.py`): pesos por capturas estimadas, vecinos vacíos y una probabilidad de pase progresiva según lo lleno que esté el tablero. | Rollout **aleatorio puro**, con un 5 % de pases voluntarios. |
+| **Expansión** | **Perezosa**: al visitar un nodo se expanden *todos* sus movimientos legales de una vez (dict de hijos). | **Un hijo por iteración**: se elige un movimiento aleatorio pendiente, se juega y se crea un solo nodo nuevo. |
+| **Constante UCT** | `exploracion = 1.4`. | `constante_exploracion = 1.414` (la clásica √2). |
+| **Longitud del rollout** | `pliegues_rollout = 40` movimientos fijos. | `tamano * tamano` (juego más largo), configurable con `pliegues_rollout`. |
+| **Decisión final** | Hijo con más visitas, desempatando por mayor Q. | Hijo con más visitas. |
+| **Valor retropropagado** | `0.0 / 0.5 / 1.0` según el resultado, alternando la perspectiva por nivel. | Victoria entera (o `0.5` en empate) desde la perspectiva de quien movió. |
+| **Límite de tiempo** | Respeta `tiempo_limite_ms` en el bucle principal. | Idem, de forma nativa (sin calibración). |
+
+Estas diferencias explican por qué, a **igual número de simulaciones**, el MCTS
+heurístico es más fuerte que la MCTS L: sus playouts juegan movimientos
+razonables (capturar, ocupar libertades) en lugar de movimientos al azar, por
+lo que el valor estimado de cada nodo se parece más al resultado real. Para
+equilibrar los duelos, el adaptador `ia/rival_lina.py` aplica un **handicap de
+simulaciones (`HANDICAP_LINA = 3`)**: `mcts-l-250` realmente ejecuta
+**750** simulaciones, `mcts-l-800` ejecuta **2400**.
+
+## 3.6 IAs disponibles
+
+La aplicación incluye tres jugadores automáticos, identificados por una configuración:
+
+- `aleatorio` — jugador de referencia: elige una jugada legal al azar (baseline).
+- `mcts-<sims>` — el MCTS propio con UCT y playouts heurísticos. Las simulaciones se configuran (por ejemplo, `mcts-250`, `mcts-800`, `mcts-2000`).
+- `mcts-l-<sims>` — la **MCTS L**, el MCTS (UCT clásico con rollout aleatorio puro), portado a nuestro motor. Su adaptador aplica un handicap de simulaciones (`HANDICAP = 3`) porque su rollout aleatorio es más débil que el heurístico a igualdad de simulaciones (ver §3.5).
+
+### 3.7 Modos de juego y comparación entre IAs
+
+La aplicación web permite jugar en varios modos:
+
+- **PvP local** — dos jugadores humanos en el mismo tablero.
+- **Humano vs IA** — una persona contra el MCTS configurado.
+- **IA vs IA** — dos MCTS juegan automáticamente.
+- **Duelo MCTS vs MCTS L** — enfrenta el MCTS heurístico contra la MCTS L, cada lado con su configuración.
+
+Para comparar IAs también se dispone de:
+
+- **Experimentos** (`/api/ai/experiment`, `ia/experimento.py`): duelos entre configuraciones arbitrarias (`aleatorio`, `mcts-<sims>`, `mcts-l-<sims>`) con semilla reproducible, agregando victorias, empates, movimientos y tiempos promedio.
+- **Torneo round-robin** (`/api/ai/torneo`, `ia/torneo.py`): juega en paralelo (procesos) todas las parejas de configuraciones en un tablero pequeño, y agrega por configuración victorias, derrotas, margen promedio, tiempo por jugada y sims por segundo.
+
 ---
 
 # 4. Pruebas
@@ -164,6 +218,8 @@ Las pruebas de la IA verifican que:
 - no juegue sobre posiciones ocupadas;
 - la búsqueda MCTS no modifique el tablero real mientras analiza;
 - los movimientos seleccionados puedan ser ejecutados por el motor.
+
+Además, las pruebas de la **MCTS L** verifican su integración con el motor (configuraciones `mcts-l-<sims>`, handicap del adaptador y respeto del límite de tiempo), y las pruebas de la API cubren los modos de juego (PvP, humano vs IA, IA vs IA, duelo) y los endpoints de experimentos y torneo.
 
 ---
 
@@ -230,6 +286,49 @@ Esto no permite concluir que 50 simulaciones sean necesariamente peores. MCTS co
 
 
 ---
+
+# 7.1 Benchmark multi-motor (round-robin 7×7)
+
+Además del benchmark clásico contra aleatorio, se compararon **todas** las IAs
+entre sí mediante un torneo round-robin en tablero **7×7**. Se jugaron `4`
+partidas por cada pareja, alternando colores (16 partidas por configuración),
+con un límite de `700 ms` por jugada.
+
+Las configuraciones (con su significado, ver §3.5):
+`aleatorio`, `mcts-250`, `mcts-800`, `mcts-l-250`, `mcts-l-800`.
+
+![Win-rate por motor](benchmark_winrate.png)
+
+![Tiempo promedio por jugada](benchmark_tiempo.png)
+
+![Simulaciones por segundo](benchmark_sims.png)
+
+![Margen promedio de puntos](benchmark_margen.png)
+
+Resultados de la ejecución documentada:
+
+| Configuración | Victorias | Partidas | Win-rate | Margen prom. | Tiempo/jugada | Sims/s |
+|---|---:|---:|---:|---:|---:|---:|
+| `mcts-l-800` | 13 | 16 | 81.2 % | +12.3 | 716 ms | 1117 |
+| `aleatorio` | 10 | 16 | 62.5 % | +13.9 | 0.4 ms | — |
+| `mcts-l-250` | 10 | 16 | 62.5 % | +5.6 | 717 ms | 349 |
+| `mcts-800` | 4 | 16 | 25.0 % | -15.1 | 720 ms | 1111 |
+| `mcts-250` | 3 | 16 | 18.8 % | -16.6 | 722 ms | 346 |
+
+La **MCTS L** (que aplica el handicap `HANDICAP_LINA = 3`, es decir que
+`mcts-l-800` ejecuta en realidad **2400** simulaciones, ver §3.5) obtuvo el
+mejor win-rate. Nótese que `aleatorio` aparece con win-rate positivo porque
+en el round-robin cada motor también juega contra los demás, y su única
+fuente de puntos proviene de derrotar a configuraciones débiles.
+
+Es importante interpretar estos números con cautela: con solo 16 partidas por
+configuración y oponentes estocásticos, una victoria representa ~6 puntos
+porcentuales de win-rate, por lo que las diferencias entre `mcts-250` y
+`mcts-800` de esta muestra no son concluyentes. La métrica más estable es la
+de **simulaciones por segundo** (coste computacional), que distingue
+claramente la velocidad de cada implementación: MCTS heurístico y MCTS L con
+los mismos sims llevan costes parecidos, pero MCTS L juega 3× más
+simulaciones reales gracias al handicap.
 
 # 8. Costo computacional
 
@@ -317,26 +416,57 @@ En términos de efectividad, una mayor cantidad de simulaciones permite realizar
 
 En la ejecución analizada, la configuración de 100 simulaciones obtuvo 10 victorias en 10 partidas, aunque necesitó aproximadamente 0.51 segundos por decisión. En contraste, la configuración de 10 simulaciones obtuvo 9 victorias en 10 partidas utilizando aproximadamente 0.05 segundos por jugada.
 
+La comparación entre el MCTS heurístico y la MCTS L se realiza mediante el modo **duelo** de la aplicación y mediante **experimentos y torneos** (`ia/experimento.py`, `ia/torneo.py`), que permiten medir win-rate, margen, tiempo por jugada y sims por segundo para cada configuración.
+
 ---
 
 # 14. Ejecución
 
-## Ejecutar las pruebas del motor
+## Instalar dependencias
 
 ```bash
-python backend/test_go.py
+pip install -r requirements.txt
 ```
 
-## Ejecutar las pruebas de la IA
+## Ejecutar la aplicación web
 
 ```bash
-python backend/test_ia.py
+python app.py
 ```
 
-## Ejecutar el benchmark
+Luego abre `http://127.0.0.1:5000`.
+
+## Ejecutar las pruebas
 
 ```bash
-python backend/benchmark.py
+pytest pruebas/
 ```
+
+## Ejecutar el benchmark / duelos entre IA
+
+```bash
+python -m ia.experimento
+```
+
+## Regenerar el benchmark multi-motor y las gráficas
+
+```bash
+python -m scripts.benchmark_graficas --partidas 4 --tiempo 700
+```
+
+Genera `benchmark_winrate.png`, `benchmark_tiempo.png`, `benchmark_sims.png`
+y `benchmark_margen.png`, y guarda el resumen en `data/benchmark_roundrobin.json`.
+
+## Desplegar en Render
+
+El repositorio incluye un blueprint `render.yaml`:
+
+- Servidor: `gunicorn app:app --bind 0.0.0.0:$PORT`
+- Instalación: `pip install -r requirements.txt`
+- `app.py` lee la variable de entorno `PORT` proporcionada por Render.
+
+Para un deploy manual en Render: crea un *Web Service* apuntando al repo,
+asigna el comando de arranque de arriba y añade la variable `PYTHON_VERSION=3.12`.
 
 ---
+

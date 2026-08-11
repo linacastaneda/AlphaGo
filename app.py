@@ -38,7 +38,7 @@ class SesionPartida:
 
     def es_ia(self, color: int) -> bool:
         return str(self.jugadores.get(color, "")).startswith(
-            ("mcts", "alphago", "ia", "lina"))
+            ("mcts", "alphago", "ia"))
 
     def turno_actual(self):
         return self.partida.turno
@@ -101,8 +101,8 @@ def crear_app(prueba: bool = False) -> Flask:
         jugador_blanco = cuerpo.get("jugador_blanco") or "humano"
 
         tiempo_limite = int(cuerpo.get("tiempo_limite_ms", 5000))
-        # El MCTS de Lina es más lento por simulación: en duelo se usa un
-        # presupuesto menor por jugada para mantener partidas ágiles.
+        # MCTS L (la MCTS de Lina) es más lenta por simulación: en duelo se usa
+        # un presupuesto menor por jugada para mantener partidas ágiles.
         if modo == "duelo":
             tiempo_limite = min(tiempo_limite, 2000)
 
@@ -127,7 +127,7 @@ def crear_app(prueba: bool = False) -> Flask:
             for color, lado in ((NEGRO, jugador_negro), (BLANCO, jugador_blanco)):
                 if lado in (None, "humano"):
                     jugadores[color] = "humano"
-                elif lado.startswith("lina-"):
+                elif lado.startswith("mcts-l-"):
                     jugadores[color] = lado
                 elif lado.startswith("mcts-"):
                     jugadores[color] = lado
@@ -194,7 +194,7 @@ def crear_app(prueba: bool = False) -> Flask:
         if es_config_lina(config_ia):
             from ia.rival_lina import crear_rival
             jugador = crear_rival(
-                simulaciones=int(config_ia.split("-")[1]),
+                simulaciones=int(config_ia.split("-")[2]),
                 tiempo_limite_ms=sesion.config.get("tiempo_limite_ms"))
             resultado = jugador.mejor_jugada(sesion.partida)
         else:
@@ -215,8 +215,6 @@ def crear_app(prueba: bool = False) -> Flask:
             "win_rate": resultado["win_rate"],
             "nodes": resultado["nodes"],
             "config": resultado["config"],
-            "policy_confidence": None,
-            "value_estimate": None,
         }
         sesion.partida.agregar_metadatos_ultimo_movimiento(
             {"ai": datos_ia, "tiempo_ms": round(tiempo_total_ms, 2)})
@@ -296,7 +294,7 @@ def crear_app(prueba: bool = False) -> Flask:
         procesos = cuerpo.get("procesos")
 
         for config in (configs or []):
-            if not (config.startswith("mcts-") or config.startswith("lina-") or config == "aleatorio"):
+            if not (config.startswith("mcts-") or config == "aleatorio"):
                 return jsonify({"error": f"configuración inválida: {config}"}), 400
 
         inicio = time.perf_counter()
@@ -383,6 +381,7 @@ app = crear_app()
 
 
 if __name__ == "__main__":
+    import os
     store._asegurar_directorios()
     perf.cargar_log()
-    app.run(debug=True, port=5000, use_reloader=False)
+    app.run(debug=True, port=int(os.environ.get("PORT", 5000)), use_reloader=False)

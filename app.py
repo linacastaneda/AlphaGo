@@ -112,7 +112,7 @@ def crear_app(prueba: bool = False) -> Flask:
         # partida rellenando territorio de nadie.
         limite_ia = max(30, tamano * tamano * 2)
         limite_movimientos = max(2, int(cuerpo.get("limite_movimientos",
-                                                    limite_ia if modo in ("ia_ia", "duelo") else 360)))
+                                                    limite_ia if modo in ("vs_ia", "ia_ia", "duelo") else 360)))
 
         config = {
             "simulaciones": simulaciones,

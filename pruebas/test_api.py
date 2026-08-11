@@ -125,6 +125,38 @@ def test_ia_ia_forzada_por_limite_de_movimientos(cliente):
     assert estado["num_movimientos"] == 6
 
 
+def test_vs_ia_finaliza_por_saturacion_sin_doble_pase(cliente):
+    """Humanos vs IA no deben quedar colgadas: al llenarse el tablero el
+    servidor cierra la partida aunque el humano nunca pase dos veces."""
+    from app import PARTIDAS
+    from motor import NEGRO, BLANCO
+    partida = cliente.post("/api/game/new", json={
+        "modo": "vs_ia", "simulaciones": "80", "tiempo_limite_ms": 200,
+    }).get_json()
+    identificador = partida["id"]
+    sesion = PARTIDAS[identificador]
+    # 9x9 = 81 celdas; el umbral de saturación (85%) son ~69 celdas.
+    # Rellena el tablero directamente en el motor (posiciones sin capturar)
+    # hasta superar el 85%, luego un movimiento humano dispara _forzar_limite.
+    tamano = 9
+    for fila in range(tamano):
+        for col in range(tamano):
+            # pinta el tablero casi lleno: el saturar es lo que debe cerrar
+            sesion.partida.tablero.celdas[fila][col] = (
+                NEGRO if col < tamano - 1 else BLANCO)
+    # deja una sola celda vacía para que el human moverse sea legal (~98%)
+    sesion.partida.tablero.celdas[0][tamano - 1] = 0
+    ocupadas = sum(1 for f in sesion.partida.tablero.celdas for c in f if c != 0)
+    assert ocupadas / (tamano * tamano) >= 0.85
+
+    # un movimiento humano en turno negro dispara el cierre por saturación
+    respuesta = cliente.post(f"/api/game/{identificador}/move",
+                             json={"fila": 0, "col": tamano - 1})
+    estado = respuesta.get_json()["estado"]
+    assert estado["terminada"] is True
+    assert estado["resultado"]["ganador"] in (1, 2)
+
+
 def test_duelo_crea_jugadores_por_lado(cliente):
     partida = cliente.post("/api/game/new", json={
         "modo": "duelo", "simulaciones": "250",

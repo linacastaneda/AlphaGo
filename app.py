@@ -357,10 +357,23 @@ def _enriquecer_perf(sesion: SesionPartida) -> None:
 
 
 def _forzar_limite(sesion: SesionPartida) -> None:
-    """Finaliza la partida si se alcanzó el límite de movimientos configurado."""
+    """Finaliza la partida si se alcanzó el límite de movimientos configurado.
+
+    Además del límite por número de jugadas, en modos con IA cerramos la
+    partida en cuanto el tablero está mayormente ocupado: es el fin natural
+    del juego por área, aunque los jugadores (sobre todo un humano) nunca
+    lleguen a pasar dos veces seguidas. Así ninguna partida queda colgada
+    rellenando territorio de nadie.
+    """
     partida = sesion.partida
     if partida.terminada:
         return
+    if sesion.modo in ("vs_ia", "ia_ia", "duelo"):
+        tablero = partida.tablero
+        ocupadas = sum(1 for fila in tablero.celdas for celda in fila if celda != 0)
+        if tablero.tamano * tablero.tamano > 0 and ocupadas / (tablero.tamano * tablero.tamano) >= 0.85:
+            partida.finalizar()
+            return
     limite = int(sesion.config.get("limite_movimientos", 360))
     if len(partida.movimientos) >= limite:
         partida.finalizar()

@@ -61,7 +61,7 @@ class MCTS:
             for celda in fila:
                 if celda != 0:
                     ocupadas += 1
-        return ocupadas / total >= 0.92
+        return ocupadas / total >= 0.85
 
     def mejor_jugada(self, partida) -> dict:
         """Calcula la mejor jugada para el jugador al turno.

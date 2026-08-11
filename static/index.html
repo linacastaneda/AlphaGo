@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlphaGo Telemetry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="cabecera contenedor">
+    <div class="cabecera__marca">
+      <h1 class="cabecera__titulo">AlphaGo Telemetry</h1>
+    </div>
+    <nav class="cabecera__nav" id="navegacion">
+      <button class="nav__boton activo" data-pestana="partida">Partida</button>
+      <button class="nav__boton" data-pestana="replay">Replay</button>
+      <button class="nav__boton" data-pestana="metricas">Métricas</button>
+    </nav>
+  </header>
+
+  <main class="contenedor">
+
+    <!-- ══════════════ PARTIDA ══════════════ -->
+    <section class="pestana" id="pestana-partida">
+      <div class="panel-partida">
+        <!-- 60% Tablero -->
+        <div class="area-tablero">
+          <div class="marco-tablero">
+            <svg id="tablero" viewBox="0 0 760 760" role="img" aria-label="Tablero de Go"></svg>
+          </div>
+          <div class="bandeja">
+            <div class="bandeja__fila">
+              <span class="piedra bandeja__piedra negra" aria-hidden="true"></span>
+              <span class="bandeja__numero mono" id="capturas-negro">0</span>
+              <span class="bandeja__etiqueta">Prisioneros</span>
+            </div>
+            <div class="bandeja__fila">
+              <span class="piedra bandeja__piedra blanca" aria-hidden="true"></span>
+              <span class="bandeja__numero mono" id="capturas-blanco">0</span>
+              <span class="bandeja__etiqueta">Prisioneros</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 40% Control y Telemetría -->
+        <aside class="columna-control">
+          <div class="tarjeta-modulo">
+            <div class="tarjeta__cabecera">
+              <h2 class="tarjeta__titulo">Configuración</h2>
+            </div>
+            <div class="tarjeta__cuerpo">
+              <div class="campo-grupo">
+                <div class="campo">
+                  <label for="select-modo">Modo</label>
+                  <select id="select-modo" class="mono-select">
+                    <option value="vs_ia">Humano vs IA</option>
+                    <option value="pvp">Local PvP</option>
+                    <option value="ia_ia">IA vs IA</option>
+                  </select>
+                </div>
+                <div class="campo">
+                  <label for="select-sims">Simulaciones</label>
+                  <select id="select-sims" class="mono-select">
+                    <option value="250">250 (Rápido)</option>
+                    <option value="800" selected>800 (Estándar)</option>
+                    <option value="2000">2000 (Profundo)</option>
+                  </select>
+                </div>
+              </div>
+              <button class="boton boton-primario" id="boton-nueva">Iniciar Partida</button>
+            </div>
+          </div>
+
+          <div class="tarjeta-modulo">
+            <div class="tarjeta__cabecera">
+              <h2 class="tarjeta__titulo">Estado del Motor</h2>
+            </div>
+            <div class="tarjeta__cuerpo">
+              <div class="indicador-turno" id="indicador-turno">
+                <span class="indicador-turno__piedra negra"></span>
+                <span class="indicador-turno__texto mono" id="texto-turno">Turno: Negro</span>
+              </div>
+              <dl class="kpis">
+                <div class="kpi"><dt>Jugada</dt><dd class="mono" id="kpi-jugada">0</dd></div>
+                <div class="kpi"><dt>Última coord.</dt><dd class="mono" id="kpi-ultima">—</dd></div>
+                <div class="kpi"><dt>Capturas (N/B)</dt><dd class="mono" id="kpi-capturas">0 / 0</dd></div>
+                <div class="kpi"><dt>Resultado</dt><dd class="mono" id="kpi-resultado">—</dd></div>
+              </dl>
+            </div>
+          </div>
+
+          <div class="tarjeta-modulo tarjeta-ia">
+            <div class="tarjeta__cabecera">
+              <h3 class="tarjeta__titulo">Telemetría MCTS</h3>
+            </div>
+            <div class="tarjeta__cuerpo">
+              <dl class="kpis">
+                <div class="kpi"><dt>Nodos</dt><dd class="mono" id="ia-nodos">—</dd></div>
+                <div class="kpi"><dt>Tiempo (ms)</dt><dd class="mono" id="ia-tiempo">—</dd></div>
+                <div class="kpi"><dt>Win-rate (%)</dt><dd class="mono" id="ia-winrate">—</dd></div>
+              </dl>
+              <div class="barra-win">
+                <span class="barra-win__relleno" id="barra-winrate"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tarjeta-modulo oculta" id="tarjeta-analisis">
+            <div class="tarjeta__cabecera">
+              <h3 class="tarjeta__titulo">Análisis MCTS</h3>
+              <span class="mono tarjeta-analisis__nota" id="analisis-nota"></span>
+            </div>
+            <div class="tarjeta__cuerpo">
+              <ul class="lista-analisis" id="lista-analisis"></ul>
+            </div>
+          </div>
+
+          <div class="fila-acciones">
+            <button class="boton" id="boton-pasar">Pasar</button>
+            <button class="boton" id="boton-rendirse">Rendirse</button>
+            <button class="boton" id="boton-analizar">Analizar</button>
+            <button class="boton" id="boton-paso-ia">Jugar IA</button>
+          </div>
+          <p class="msg" id="mensaje">Sistema preparado.</p>
+          <a class="msg__enlace oculta" id="enlace-replay" href="#replay">Ver partida en Replay</a>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ══════════════ REPLAY ══════════════ -->
+    <section class="pestana oculta" id="pestana-replay">
+      <div class="grid-replay">
+        <div class="tarjeta-modulo lista-partidas">
+          <div class="tarjeta__cabecera">
+            <h2 class="tarjeta__titulo">Registro de Partidas</h2>
+          </div>
+          <ul class="lista-sgf" id="lista-partidas"></ul>
+        </div>
+        <div class="visor tarjeta-modulo">
+          <div class="tarjeta__cuerpo">
+            <div class="marco-tablero marco-tablero--peque">
+              <svg id="tablero-replay" viewBox="0 0 760 760" role="img" aria-label="Tablero de replay"></svg>
+            </div>
+            <div class="controles-replay">
+              <button class="roboton" id="replay-inicio" title="Inicio">⏮</button>
+              <button class="roboton" id="replay-atras" title="Anterior">◀</button>
+              <button class="roboton" id="replay-play" title="Reproducir / pausa">▶</button>
+              <button class="roboton" id="replay-siguiente" title="Siguiente">▶</button>
+              <input type="range" id="replay-slider" min="0" max="0" value="0">
+              <label class="mono" id="replay-progreso">0/0</label>
+            </div>
+            <div class="campo">
+              <label for="replay-velocidad">Intervalo (ms)</label>
+              <select id="replay-velocidad" class="mono-select">
+                <option value="1800">1800</option>
+                <option value="900" selected>900</option>
+                <option value="350">350</option>
+              </select>
+            </div>
+            <div class="meta-movimiento mono" id="replay-meta">
+              <span id="replay-coord">—</span>
+              <span id="replay-capturas">—</span>
+              <span id="replay-ai">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ MÉTRICAS ══════════════ -->
+    <section class="pestana oculta" id="pestana-metricas">
+      <div class="titulares">
+        <div class="tarjeta-modulo">
+          <div class="tarjeta__cabecera"><h2 class="tarjeta__titulo">Ranking</h2></div>
+          <div class="tarjeta__cuerpo">
+            <table class="tabla" id="tabla-rankings">
+              <thead><tr><th>Jugador</th><th>V</th><th>D</th><th>WR(%)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tarjeta-modulo">
+          <div class="tarjeta__cabecera"><h2 class="tarjeta__titulo">Rendimiento Motor</h2></div>
+          <div class="tarjeta__cuerpo">
+            <table class="tabla" id="tabla-ia">
+              <thead><tr><th>Config</th><th>Movs</th><th>Sims</th><th>ms/jugada</th><th>sims/s</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="graficas">
+        <div class="tarjeta-modulo">
+          <div class="tarjeta__cabecera"><h2 class="tarjeta__titulo">Win-rate</h2></div>
+          <div class="tarjeta__cuerpo">
+            <canvas id="graf-winrate" height="220"></canvas>
+          </div>
+        </div>
+        <div class="tarjeta-modulo">
+          <div class="tarjeta__cabecera"><h2 class="tarjeta__titulo">Latencia p95 (ms)</h2></div>
+          <div class="tarjeta__cuerpo">
+            <canvas id="graf-latencia" height="220"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="tarjeta-modulo">
+        <div class="tarjeta__cabecera"><h2 class="tarjeta__titulo">Sistema</h2></div>
+        <div class="tarjeta__cuerpo">
+          <dl class="kpis">
+            <div class="kpi"><dt>Transacciones</dt><dd class="mono" id="perf-total">—</dd></div>
+            <div class="kpi"><dt>Memoria Avg</dt><dd class="mono" id="perf-mem">—</dd></div>
+            <div class="kpi"><dt>Memoria Max</dt><dd class="mono" id="perf-memmax">—</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie contenedor">
+    <p class="mono">Motor MCTS + UCT // Colab Policy-Value</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/board.js"></script>
+  <script src="/js/game.js"></script>
+  <script src="/js/replay.js"></script>
+  <script src="/js/metrics.js"></script>
+</body>
+</html>

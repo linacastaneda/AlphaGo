@@ -1,0 +1,1 @@
+"""Paquete de entrenamiento (dataset, redes, self-play, notebook)."""

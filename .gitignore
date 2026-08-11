@@ -1,0 +1,13 @@
+# Entorno y cachés
+__pycache__/
+*.pyc
+.venv/
+
+# Artefactos generados / runtime
+AlphaGo_colab.zip
+performance_report.md
+performance_report.html
+
+# Datos de la aplicación en ejecución
+data/perf.json
+data/games/

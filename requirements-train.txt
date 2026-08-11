@@ -1,0 +1,6 @@
+# Dependencias SOLO para entrenamiento (Google Colab / entorno de desarrollo)
+# El backend web solo necesita requirements.txt (flask + onnxruntime).
+torch>=2.2
+scikit-learn>=1.4
+skorch>=0.15
+torchviz>=0.0.2

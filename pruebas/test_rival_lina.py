@@ -15,20 +15,20 @@ from motor.scoring import Partida
 
 
 def test_es_config_lina():
-    assert es_config_lina("lina-800")
-    assert es_config_lina("lina-50")
+    assert es_config_lina("mcts-l-800")
+    assert es_config_lina("mcts-l-50")
     assert not es_config_lina("mcts-800")
     assert not es_config_lina("aleatorio")
 
 
 def test_sims_efectivos_aplica_handicap():
-    assert sims_efectivos("lina-250") == 250 * HANDICAP_LINA
+    assert sims_efectivos("mcts-l-250") == 250 * HANDICAP_LINA
 
 
 def test_rival_aplica_handicap():
     rival = RivalLina(simulaciones=250)
     assert rival.simulaciones == 250 * HANDICAP_LINA
-    assert rival._nombre_config() == f"lina-{250 * HANDICAP_LINA}"
+    assert rival._nombre_config() == f"mcts-l-{250 * HANDICAP_LINA}"
 
 
 def test_mejor_jugada_devuelve_contrato():
@@ -37,7 +37,7 @@ def test_mejor_jugada_devuelve_contrato():
     jugada = rival.mejor_jugada(partida)
     assert "fila" in jugada and "col" in jugada and "pase" in jugada
     assert jugada["sims"] > 0
-    assert jugada["config"].startswith("lina-")
+    assert jugada["config"].startswith("mcts-l-")
     if not jugada["pase"]:
         assert partida.tablero.celdas[jugada["fila"]][jugada["col"]] == 0
     assert jugada["tiempo_ms"] >= 0
@@ -56,7 +56,7 @@ def test_mcts_lina_contrato_directo():
     partida = Partida(9, 7.5)
     ia = crear_lina(simulaciones=20)
     jugada = ia.mejor_jugada(partida)
-    assert jugada["config"].startswith("lina-")
+    assert jugada["config"].startswith("mcts-l-")
     assert jugada["sims"] == 20
 
 
@@ -87,14 +87,14 @@ def test_crear_rival_defaults():
 
 def test_construir_ia_lina():
     partida = Partida(9, 7.5)
-    ia = construir_ia("lina-40", tiempo_limite_ms=2000)
+    ia = construir_ia("mcts-l-40", tiempo_limite_ms=2000)
     jugada = ia(partida)
-    assert jugada["config"].startswith("lina-")
+    assert jugada["config"].startswith("mcts-l-")
 
 
 def test_construir_ia_lina_desconocida():
     with pytest.raises(ValueError):
-        construir_ia("lina-abc")
+        construir_ia("mcts-l-abc")
 
 
 def test_mcts_lina_no_depende_de_backend():

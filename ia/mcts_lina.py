@@ -120,7 +120,7 @@ class MCTSLina:
         return tamano * tamano
 
     def _nombre_config(self) -> str:
-        return f"lina-{self.simulaciones}"
+        return f"mcts-l-{self.simulaciones}"
 
     def mejor_jugada(self, partida) -> dict:
         inicio = time.perf_counter()

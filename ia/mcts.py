@@ -1,10 +1,9 @@
-"""MCTS + UCT con playouts heurísticos, preparado para priorizar con redes."""
+"""MCTS + UCT con playouts heurísticos."""
 
 import math
-import random
 import time
 
-from motor import VACIO, oponer
+from motor import oponer
 from .rollout import simular_partida
 
 CLAVE_PASE = ("pase",)
@@ -13,16 +12,15 @@ CLAVE_PASE = ("pase",)
 class Nodo:
     """Nodo del árbol de búsqueda."""
 
-    __slots__ = ("fila", "col", "padre", "hijos", "visitas", "q", "prior")
+    __slots__ = ("fila", "col", "padre", "hijos", "visitas", "q")
 
-    def __init__(self, fila=None, col=None, padre=None, prior=0.0):
+    def __init__(self, fila=None, col=None, padre=None):
         self.fila = fila
         self.col = col
         self.padre = padre
         self.hijos = {}
         self.visitas = 0
         self.q = 0.0
-        self.prior = prior
 
     def valor_uct(self, exploracion: float) -> float:
         """Valor UCT desde la perspectiva del jugador al turno del nodo."""
@@ -44,16 +42,14 @@ class MCTS:
     """Búsqueda Monte Carlo con UCT para elegir la mejor jugada."""
 
     def __init__(self, simulaciones: int = 800, exploracion: float = 1.4,
-                 tiempo_limite_ms: int | None = None, pliegues_rollout: int = 40,
-                 redes=None):
+                 tiempo_limite_ms: int | None = None, pliegues_rollout: int = 40):
         self.simulaciones = simulaciones
         self.exploracion = exploracion
         self.tiempo_limite_ms = tiempo_limite_ms
         self.pliegues_rollout = pliegues_rollout
-        self.redes = redes
 
     def _nombre_config(self) -> str:
-        return f"mcts-{self.simulaciones}" + ("+red" if self.redes is not None else "")
+        return f"mcts-{self.simulaciones}"
 
     def mejor_jugada(self, partida) -> dict:
         """Calcula la mejor jugada para el jugador al turno.
@@ -172,40 +168,23 @@ class MCTS:
 
     def _expandir(self, nodo: Nodo, tablero, color: int) -> int:
         movimientos = tablero.obtener_movimientos_legales(color)
-        priors = None
-        if self.redes is not None:
-            _, priors = self.redes.distribucion_politica(tablero, color)
         creados = 0
         for fila, col in movimientos:
             clave = (fila, col)
             if clave in nodo.hijos:
                 continue
-            prior = priors.get(clave, 0.0) if priors else 0.0
-            nodo.hijos[clave] = Nodo(fila, col, padre=nodo, prior=prior)
+            nodo.hijos[clave] = Nodo(fila, col, padre=nodo)
             creados += 1
         if CLAVE_PASE not in nodo.hijos:
-            prior_pase = priors.get(CLAVE_PASE, 0.0) if priors else 0.0
-            nodo.hijos[CLAVE_PASE] = Nodo(padre=nodo, prior=prior_pase)
+            nodo.hijos[CLAVE_PASE] = Nodo(padre=nodo)
             creados += 1
         return creados
 
     def _seleccionar_hijo(self, nodo: Nodo) -> Nodo:
-        if self.redes is None:
-            return max(nodo.hijos.values(), key=lambda h: h.valor_uct(self.exploracion))
-
-        def _puct(hijo: Nodo) -> float:
-            if hijo.visitas == 0:
-                return float("inf")
-            q = hijo.q / hijo.visitas
-            return q + self.exploracion * hijo.prior * math.sqrt(
-                max(1, nodo.visitas)) / (1 + hijo.visitas)
-
-        return max(nodo.hijos.values(), key=_puct)
+        return max(nodo.hijos.values(), key=lambda h: h.valor_uct(self.exploracion))
 
     def _evaluar(self, tablero, color_movedor: int, komi: float) -> float:
-        """Simula (o evalúa con red de valor) la posición: resultado 0..1."""
-        if self.redes is not None:
-            return self.redes.estimar_valor(tablero, color_movedor)
+        """Simula la posición: resultado 0..1."""
         ganador, _ = simular_partida(tablero, color_movedor, komi, self.pliegues_rollout)
         if ganador is None:
             return 0.5
@@ -219,19 +198,6 @@ class MCTS:
             valor_actual = 1.0 - valor_actual
 
 
-_redes_cargadas = None
-_redes_intentado = False
-
-
 def crear_mcts(simulaciones: int = 800, tiempo_limite_ms: int | None = None) -> MCTS:
-    """Factoría rápida para el MCTS, guiada por redes si hay modelos disponibles."""
-    global _redes_cargadas, _redes_intentado
-    if not _redes_intentado:
-        _redes_intentado = True
-        try:
-            from .redes import cargar_redes
-            _redes_cargadas = cargar_redes()
-        except Exception:
-            _redes_cargadas = None
-    return MCTS(simulaciones=simulaciones, tiempo_limite_ms=tiempo_limite_ms,
-                redes=_redes_cargadas)
+    """Factoría rápida para el MCTS heurístico."""
+    return MCTS(simulaciones=simulaciones, tiempo_limite_ms=tiempo_limite_ms)

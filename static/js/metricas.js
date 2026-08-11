@@ -1,4 +1,4 @@
-/* Métricas: rankings, IA y latencia desde /api/metrics y /api/perf. */
+/* Métricas: rankings, rendimiento de motor y torneo de IA. */
 
 (() => {
   const _set = (id, valor) => { const el = document.getElementById(id); if (el) el.textContent = valor !== undefined && valor !== null ? valor : "—"; };
@@ -74,63 +74,18 @@
     });
   }
 
-  async function cargar_perf() {
-    try {
-      const respuesta = await fetch("/api/perf");
-      const datos = await respuesta.json();
-      _set("perf-total", datos.total_mediciones);
-      _set("perf-mem", datos.memoria_promedio_kb ? `${(datos.memoria_promedio_kb / 1024).toFixed(0)} MB` : "—");
-      _set("perf-memmax", datos.max_memoria_kb ? `${(datos.max_memoria_kb / 1024).toFixed(0)} MB` : "—");
-      rendir_latencia(datos.endpoints || {});
-    } catch (err) {
-      // sin datos, quedan los guiones
-    }
-  }
-
-  function rendir_latencia(endpoints) {
-    const canvas = document.getElementById("graf-latencia");
-    if (!canvas || typeof window.Chart === "undefined") return;
-    const nombres = Object.keys(endpoints);
-    const p95 = nombres.map((n) => endpoints[n].p95_ms !== undefined ? endpoints[n].p95_ms : 0);
-    if (window._latChart) window._latChart.destroy();
-    window._latChart = new window.Chart(canvas, {
-      type: "bar",
-      data: {
-        labels: nombres,
-        datasets: [{
-          label: "p95 (ms)",
-          data: p95,
-          backgroundColor: "rgba(224, 176, 70, 0.55)",
-          borderColor: "#e0b046",
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        indexAxis: "y",
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { beginAtZero: true, grid: { color: "rgba(25,22,18,0.08)" }, ticks: { color: "#4a443a" } },
-          y: { grid: { color: "rgba(25,22,18,0.08)" }, ticks: { color: "#4a443a" } }
-        }
-      }
-    });
-  }
-
   cargar_metrics();
-  cargar_perf();
   document.getElementById("btn-torneo")?.addEventListener("click", correr_torneo);
 
   document.addEventListener("pestana:mostrada", (ev) => {
     if (ev.detail === "metricas") {
       cargar_metrics();
-      cargar_perf();
     }
   });
 
   /* ── Torneo IA (round-robin paralelo) ── */
 
-  const CONFIGS_TORNEO = ["mcts-250", "mcts-800", "mcts-2000", "lina-250", "lina-800"];
+  const CONFIGS_TORNEO = ["aleatorio", "mcts-250", "mcts-800", "mcts-2000", "mcts-l-250", "mcts-l-800"];
 
   function rendir_torneo(datos) {
     const nota = document.getElementById("torneo-estado");

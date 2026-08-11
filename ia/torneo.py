@@ -1,13 +1,13 @@
 """Torneo round-robin entre configuraciones de IA.
 
 Corre en paralelo muchas partidas rápidas (tablero pequeño, tiempo límite
-corto) para comparar cada modelo contra los demás y agregar métricas por
+corto) para comparar cada configuración contra las demás y agregar métricas por
 configuración: victorias, derrotas, margen promedio, tiempo por jugada y
 sims por segundo.
 
 Uso típico:
 
-    >>> resultado = torneo(["mcts-250", "lina-250"], partidas=6)
+    >>> resultado = torneo(["mcts-250", "mcts-l-250"], partidas=6)
     >>> resultado["resumen"]  # tabla agregada por configuración
 """
 
@@ -17,7 +17,7 @@ from concurrent.futures import ProcessPoolExecutor
 from motor import BLANCO, NEGRO
 from .experimento import LIMITE_MOVIMIENTOS_POR_DEFECTO, construir_ia, jugar_partida
 
-CONFIGS_POR_DEFECTO = ["mcts-250", "mcts-800", "mcts-2000", "lina-250", "lina-800"]
+CONFIGS_POR_DEFECTO = ["aleatorio", "mcts-250", "mcts-800", "mcts-2000", "mcts-l-250", "mcts-l-800"]
 
 
 def _crear_pool(procesos):
@@ -28,22 +28,35 @@ def _crear_pool(procesos):
 
 def _sims_de(config: str) -> int:
     """Simulaciones base declaradas por la config (sin aplicar handicaps)."""
-    if config.startswith("lina-"):
+    if config.startswith("mcts-l-"):
+        return int(config.split("-")[2])
+    if config.startswith("mcts-"):
         return int(config.split("-")[1])
-    base = config.removesuffix("+red")
-    if base.startswith("mcts-"):
-        return int(base.split("-")[1])
     return 0
 
 
 def _jugar_una(config_negro: str, config_blanco: str, semilla: int,
                tamano: int, komi: float, tiempo_limite_ms: int | None,
-               limite_movimientos: int) -> dict:
+               limite_movimientos: int, persistir: bool) -> dict:
     """Una partida (worker de procesos): construye las IA y la juega."""
     negro = construir_ia(config_negro, tiempo_limite_ms)
     blanco = construir_ia(config_blanco, tiempo_limite_ms)
+    if not persistir:
+        return jugar_partida(negro, blanco, komi=komi, semilla=semilla,
+                             tamano=tamano, limite_movimientos=limite_movimientos)
+
+    def guardar(partida):
+        from almacenamiento import store
+        store.guardar_partida(
+            partida,
+            {NEGRO: config_negro, BLANCO: config_blanco},
+            {"modo": "torneo", "tamano": tamano, "komi": komi,
+             "simulaciones": max(_sims_de(config_negro), _sims_de(config_blanco)),
+             "tiempo_limite_ms": tiempo_limite_ms})
+
     return jugar_partida(negro, blanco, komi=komi, semilla=semilla,
-                         tamano=tamano, limite_movimientos=limite_movimientos)
+                         tamano=tamano, limite_movimientos=limite_movimientos,
+                         al_final=guardar)
 
 
 def _pares_round_robin(configs: list[str], partidas: int, semilla: int | None):
@@ -73,11 +86,13 @@ def torneo(configs: list[str] | None = None,
            tiempo_limite_ms: int | None = 700,
            semilla: int | None = None,
            limite_movimientos: int | None = None,
-           procesos: int | None = None) -> dict:
+           procesos: int | None = None,
+           persistir: bool = True) -> dict:
     """Torneo round-robin entre ``configs`` jugado con procesos en paralelo.
 
-    Devuelve un dict con los enfrentamientos por pareja y un resumen con
-    métricas agregadas por configuración.
+    ``persistir=True`` guarda cada partida en ``data/games`` (aparecen en el
+    historial de la UI). Devuelve un dict con los enfrentamientos por pareja y
+    un resumen con métricas agregadas por configuración.
     """
     configs = list(configs or CONFIGS_POR_DEFECTO)
     if len(configs) < 2:
@@ -89,7 +104,8 @@ def torneo(configs: list[str] | None = None,
 
     enfrentamientos = _pares_round_robin(configs, partidas, semilla)
     tareas = [
-        (negro, blanco, sem, tamano, komi, tiempo_limite_ms, limite_movimientos)
+        (negro, blanco, sem, tamano, komi, tiempo_limite_ms,
+         limite_movimientos, persistir)
         for negro, blanco, sem in enfrentamientos
     ]
 

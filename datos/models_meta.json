@@ -1,4 +1,0 @@
-{
-  "nota": "Registro de versiones de modelo ONNX (v1/v2/v3) y sus resultados. Se puebla a medida que se exporten redes desde Colab y se ejecuten duelos baseline-vs-redes.",
-  "versiones": []
-}

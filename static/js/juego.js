@@ -133,7 +133,7 @@
     const simbolo = color === 1 ? "B" : "W";
     const config = estado.jugadores[simbolo] || "humano";
     if (config === "humano") return "Humano";
-    if (config.startsWith("lina-")) return `Lina ${config.replace(/^lina-/, "")} sims`;
+    if (config.startsWith("mcts-l-")) return `MCTS L ${config.replace(/^mcts-l-/, "")} sims`;
     return config.replace(/^mcts-/, "MCTS ");
   }
 
@@ -143,7 +143,7 @@
   }
 
   function es_ia_en_turno() {
-    return /^(mcts|lina|alphago|ia)/.test(jugador_en_turno());
+    return /^(mcts|alphago|ia)/.test(jugador_en_turno());
   }
 
   function ultimo_coord(estadoPartida) {
@@ -206,7 +206,7 @@
   }
 
   function nombre_modo(modo) {
-    return { pvp: "dos jugadores", vs_ia: "humano vs IA", ia_ia: "IA vs IA", duelo: "duelo MCTS vs Lina" }[modo] || modo;
+    return { pvp: "dos jugadores", vs_ia: "humano vs IA", ia_ia: "IA vs IA", duelo: "duelo MCTS vs MCTS L" }[modo] || modo;
   }
 
   function resultado_texto(resultado) {

@@ -60,7 +60,7 @@
                     <option value="vs_ia">Humano vs IA</option>
                     <option value="pvp">PvP Local</option>
                     <option value="ia_ia">IA vs IA</option>
-                    <option value="duelo">Duelo MCTS vs Lina</option>
+                    <option value="duelo">Duelo MCTS vs MCTS L</option>
                   </select>
                 </div>
                 <div class="campo">
@@ -77,7 +77,7 @@
                   <label for="select-duelo-negro">Negro (●)</label>
                   <select id="select-duelo-negro" class="mono-select">
                     <option value="mcts" selected>MCTS estándar</option>
-                    <option value="lina">MCTS de Lina</option>
+                    <option value="mcts-l">MCTS L</option>
                     <option value="humano">Humano</option>
                   </select>
                 </div>
@@ -85,7 +85,7 @@
                   <label for="select-duelo-blanco">Blanco (○)</label>
                   <select id="select-duelo-blanco" class="mono-select">
                     <option value="mcts" selected>MCTS estándar</option>
-                    <option value="lina">MCTS de Lina</option>
+                    <option value="mcts-l">MCTS L</option>
                     <option value="humano">Humano</option>
                   </select>
                 </div>
@@ -237,7 +237,7 @@
           <button class="boton" id="btn-torneo" type="button">Correr torneo (7x7)</button>
         </div>
         <div class="tarjeta__cuerpo">
-          <p class="mono tarjeta-analisis__nota" id="torneo-estado">Partidas rápidas en paralelo entre MCTS y Lina.</p>
+          <p class="mono tarjeta-analisis__nota" id="torneo-estado">Partidas rápidas en paralelo entre MCTS y MCTS L.</p>
           <div style="overflow-x:auto">
             <table class="tabla" id="tabla-torneo">
               <thead><tr><th>Config</th><th>V</th><th>D</th><th>E</th><th>Vict.(%)</th><th>Margen</th><th>ms/jug</th><th>sims/s</th></tr></thead>
@@ -253,28 +253,12 @@
             <canvas id="graf-winrate" height="220"></canvas>
           </div>
         </div>
-        <div class="tarjeta-modulo">
-          <div class="tarjeta__cabecera"><h2 class="tarjeta__titulo">Latencia p95 (ms)</h2></div>
-          <div class="tarjeta__cuerpo">
-            <canvas id="graf-latencia" height="220"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="tarjeta-modulo">
-        <div class="tarjeta__cabecera"><h2 class="tarjeta__titulo">Sistema</h2></div>
-        <div class="tarjeta__cuerpo">
-          <dl class="kpis">
-            <div class="kpi"><dt>Transacciones</dt><dd class="mono" id="perf-total">—</dd></div>
-            <div class="kpi"><dt>Memoria Prom.</dt><dd class="mono" id="perf-mem">—</dd></div>
-            <div class="kpi"><dt>Memoria Máx.</dt><dd class="mono" id="perf-memmax">—</dd></div>
-          </dl>
-        </div>
       </div>
     </section>
   </main>
 
   <footer class="pie contenedor">
-    <p class="mono">Motor MCTS + UCT // Colab Policy-Value</p>
+    <p class="mono">Motor MCTS + UCT // IA de Lina</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>

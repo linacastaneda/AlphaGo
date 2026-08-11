@@ -1,4 +1,4 @@
-"""IA de Lina integrada en nuestro código: MCTS académico portado.
+"""IA de Lina integrada en nuestro código: MCTS portado (nombre: MCTS L).
 
 Reemplaza al adaptador anterior que dependía de ``backend/ia_go``.
 Ahora usa ``ai.mcts_lina.MCTSLina``, que juega con nuestro motor y respeta
@@ -15,17 +15,17 @@ HANDICAP_LINA = 3
 
 
 def es_config_lina(config: str) -> bool:
-    return isinstance(config, str) and config.startswith("lina-")
+    return isinstance(config, str) and config.startswith("mcts-l-")
 
 
 def sims_efectivos(config: str) -> int:
     """Simulaciones reales que usará Lina (aplicando el handicap)."""
-    base = int(config.split("-")[1])
+    base = int(config.split("-")[2])
     return base * HANDICAP_LINA
 
 
 def config_reporte(simulaciones: int) -> str:
-    return f"lina-{simulaciones}"
+    return f"mcts-l-{simulaciones}"
 
 
 class RivalLina:

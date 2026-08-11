@@ -128,11 +128,11 @@ def test_ia_ia_forzada_por_limite_de_movimientos(cliente):
 def test_duelo_crea_jugadores_por_lado(cliente):
     partida = cliente.post("/api/game/new", json={
         "modo": "duelo", "simulaciones": "250",
-        "jugador_negro": "mcts-250", "jugador_blanco": "lina-250",
+        "jugador_negro": "mcts-250", "jugador_blanco": "mcts-l-250",
     }).get_json()
     assert partida["modo"] == "duelo"
     assert partida["jugadores"]["B"] == "mcts-250"
-    assert partida["jugadores"]["W"] == "lina-250"
+    assert partida["jugadores"]["W"] == "mcts-l-250"
 
 
 def test_duelo_jugador_invalido_rechazado(cliente):
@@ -146,7 +146,7 @@ def test_duelo_jugador_invalido_rechazado(cliente):
 def test_duelo_despacha_motor_por_color(cliente):
     partida = cliente.post("/api/game/new", json={
         "modo": "duelo", "simulaciones": "250",
-        "jugador_negro": "mcts-250", "jugador_blanco": "lina-250",
+        "jugador_negro": "mcts-250", "jugador_blanco": "mcts-l-250",
         "tiempo_limite_ms": 2000,
     }).get_json()
     identificador = partida["id"]
@@ -157,20 +157,20 @@ def test_duelo_despacha_motor_por_color(cliente):
 
     cliente.post(f"/api/game/{identificador}/ai-move")
     blanco = cliente.get(f"/api/game/{identificador}").get_json()
-    assert blanco["movimientos"][-1]["ai"]["config"].startswith("lina-")
+    assert blanco["movimientos"][-1]["ai"]["config"].startswith("mcts-l-")
 
 
 def test_duelo_humano_en_cualquier_lado(cliente):
     partida = cliente.post("/api/game/new", json={
         "modo": "duelo", "simulaciones": "250",
-        "jugador_negro": "lina-250", "jugador_blanco": "humano",
+        "jugador_negro": "mcts-l-250", "jugador_blanco": "humano",
         "tiempo_limite_ms": 2000,
     }).get_json()
     identificador = partida["id"]
     # negro es IA (Lina), blanco es humano
     respuesta = cliente.post(f"/api/game/{identificador}/ai-move")
     datos = respuesta.get_json()
-    assert datos["estado"]["movimientos"][-1]["ai"]["config"].startswith("lina-")
+    assert datos["estado"]["movimientos"][-1]["ai"]["config"].startswith("mcts-l-")
     assert datos["estado"]["turno"] == 2
 
 
@@ -197,16 +197,32 @@ def test_torneo_paralelo_devuelve_resumen(cliente):
         assert "tiempo_promedio_ms" in fila
 
 
+def test_torneo_persiste_partidas_en_historial(cliente):
+    """Las partidas del torneo deben guardarse y aparecer en el historial."""
+    from almacenamiento import store
+    respuesta = cliente.post("/api/ai/torneo", json={
+        "configs": ["mcts-100", "mcts-l-100"],
+        "partidas": 1, "tamano": 7, "tiempo_limite_ms": 150,
+    })
+    assert respuesta.status_code == 200
+    guardadas = [p for p in store.listar_partidas()
+                 if p["jugadores"].get("B") in ("mcts-100", "mcts-l-100")]
+    assert len(guardadas) >= 1
+    detalle = store.cargar_partida(guardadas[0]["id"])
+    assert detalle["board_size"] == 7
+    assert len(detalle["movimientos"]) > 0
+
+
 def test_experimento_con_lina(cliente):
     respuesta = cliente.post("/api/ai/experiment",
-                             json={"negro": "aleatorio", "blanco": "lina-30",
+                             json={"negro": "aleatorio", "blanco": "mcts-l-30",
                                    "partidas": 1, "tiempo_limite_ms": 1000,
                                    "limite_movimientos": 12})
     datos = respuesta.get_json()
     assert respuesta.status_code == 200
-    assert datos["blanco"] == "lina-30"
-    assert datos["simulaciones"]["lina-30"] == 30
-    assert datos["tiempo_promedio_ms"]["lina-30"] > 0
+    assert datos["blanco"] == "mcts-l-30"
+    assert datos["simulaciones"]["mcts-l-30"] == 30
+    assert datos["tiempo_promedio_ms"]["mcts-l-30"] > 0
 
 
 

@@ -1,77 +1,66 @@
 # PLAN — Aplicación web de Go inspirada en AlphaGo (simplificado)
 
-> **Stack:** Python + Flask | **Tablero:** 9×9 (komi 7.5, conteo por área, ko simple, superko opcional) | **Inferencia:** ONNX Runtime local | **Entrenamiento:** Google Colab (`.ipynb`) | **Persistencia:** JSON con coordenadas + métricas | **Suite de tests:** `pytest`.
+> **Stack:** Python + Flask | **Tablero:** 9×9 (komi 7.5, conteo por área, ko simple, superko opcional) | **Persistencia:** JSON con coordenadas + métricas | **Suite de tests:** `pytest`.
 
 ## Pipeline general del proyecto
 
 ```text
-PARTIDAS HISTÓRICAS SGF
+PARTIDAS HISTÓRICAS SGF (data/historical/)
         ↓
-ENTRENAMIENTO EN COLAB (policy + value + export ONNX)
+MCTS + UCT (heurístico) con playouts
         ↓
-POLICY.ONNX + VALUE.ONNX
+APLICACIÓN WEB (Flask)
         ↓
-MCTS + Policy + Value
+SELF-PLAY (IA vs IA, data/games/)
         ↓
-APLICACIÓN WEB
-        ↓
-SELF-PLAY (IA vs IA)
-        ↓
-NUEVAS VERSIONES DEL MODELO (v1 → v2 → v3)
-        ↓
-ANÁLISIS DE DESEMPEÑO (performance_report.md / .html)
+ANÁLISIS Y COMPARACIÓN ENTRE CONFIGURACIONES DE IA
 ```
 
 ## Honestidad técnica
 
-Es una arquitectura **simplificada inspirada en AlphaGo** (MCTS + Policy + Value + self-play). No incluye las redes residuales de ~40 capas, TPU, ni el pipeline RL distribuido del original. El informe de desempeño debe decirlo explícitamente.
+Es una arquitectura **simplificada inspirada en AlphaGo** (MCTS + UCT). No incluye redes neuronales, TPU ni el pipeline RL distribuido del original.
 
 ## Estructura del proyecto
 
 ```text
 AlphaGo/
-├── app.py                        # Flask, rutas + middleware de instrumentación (latencia, tracemalloc)
-├── requirements.txt              # flask + onnxruntime (inferencia ligera)
+├── app.py                        # Flask: rutas + middleware de instrumentación (latencia, memoria)
+├── requirements.txt              # flask + pytest
 ├── PLAN.md
 ├── README.md
-├── engine/
+├── motor/
 │   ├── board.py                  # Estado del tablero, grupos, libertades, capturas, ko
 │   └── scoring.py                # Fin de partida (doble pase) y conteo por área, komi 7.5
-├── ai/
-│   ├── mcts.py                   # MCTS + UCT (baseline heurístico y guiado por redes)
-│   ├── redes.py                  # Inferencia Policy/Value vía ONNX + codificación (fallback)
-│   ├── experimento.py            # Comparativas de configs: baseline vs redes vs aleatorio
+├── ia/
+│   ├── mcts.py                   # MCTS + UCT (baseline heurístico con playouts)
+│   ├── mcts_lina.py              # MCTS estilo académico (rollout aleatorio puro)
+│   ├── rival_lina.py             # Adaptador MCTS L (handicap de simulaciones)
+│   ├── experimento.py            # Comparativas entre configuraciones de IA
+│   ├── torneo.py                 # Torneo round-robin paralelo entre configuraciones
 │   └── rollout.py                # Simulación aleatoria/heurística de final de partida
-├── models/
-│   └── (policy.onnx, value.onnx por versión, p. ej. v2/)
-├── training/
-│   ├── download_dataset.py       # Descarga SGF 9×9 públicos → data/historical/
-│   ├── dataset.py                # Parser SGF → posiciones (canales) + etiquetas
-│   ├── nets.py                   # CNN pequeña (policy + value) y export a ONNX
-│   ├── self_play.py              # IA vs IA → data/training/
-│   └── Colab_AlphaGo.ipynb       # Notebook completo (dataset → policy → value → onnx → self-play)
-├── storage/
+├── almacenamiento/
 │   ├── store.py                  # Persistencia JSON de partidas + historial + rankings
 │   └── perf.py                   # Métricas de rendimiento de la propia app (log rodante)
 ├── static/
 │   ├── index.html                # Tablero SVG, controles, replay, dashboard
 │   ├── css/style.css
 │   └── js/
-│       ├── board.js              # Render SVG + interacción clic
-│       ├── game.js               # Llamadas API, estado de la partida
-│       ├── replay.js             # Reproducción frame a frame (velocidad, saltos)
-│       └── metrics.js            # Gráficas con Chart.js (CDN)
+│       ├── tablero.js            # Render SVG + interacción clic
+│       ├── juego.js              # Llamadas API, estado de la partida
+│       ├── interfaz.js           # Navegación entre pestañas
+│       ├── repeticion.js         # Reproducción frame a frame (velocidad, saltos)
+│       └── metricas.js           # Gráficas con Chart.js (CDN) + torneo
 ├── data/
 │   ├── games/                    # Partidas JSON generadas por la aplicación
-│   ├── historical/               # Dataset SGF de partidas históricas
-│   ├── training/                 # Datos generados mediante self-play
-│   └── models_meta.json          # Versiones de modelo y sus resultados
-├── analysis/
-│   └── performance_report.py     # Genera performance_report.md y performance_report.html
-└── tests/
+│   ├── historical/               # SGF de partidas (históricas o de self-play)
+│   └── historial.json            # Historial agregado + rankings
+└── pruebas/
     ├── test_engine.py            # Capturas, suicidio, ko, puntuación
     ├── test_mcts.py              # Selección, expansión, retropropagación
-    └── test_api.py               # Endpoints principales
+    ├── test_rival_lina.py        # MCTS L (port de Lina) y su adaptador
+    ├── test_experimento.py       # Comparativas de configuraciones
+    ├── test_api.py               # Endpoints principales
+    └── test_storage.py           # Persistencia y rankings
 ```
 
 ---
@@ -83,7 +72,7 @@ AlphaGo/
   "id": "...",
   "board_size": 9,
   "komi": 7.5,
-  "players": { "B": "human", "W": "alphago_simplified" },
+  "players": { "B": "human", "W": "mcts-800" },
   "moves": [
     {
       "player": "B",
@@ -94,9 +83,7 @@ AlphaGo/
         "sims": 800,
         "time_ms": 115,
         "win_rate": 0.52,
-        "nodes": 213,
-        "policy_confidence": 0.41,
-        "value_estimate": 0.58
+        "nodes": 213
       },
       "perf": { "api_ms": 4 }
     }
@@ -122,7 +109,8 @@ POST /api/game/<id>/move
 POST /api/game/<id>/pass
 POST /api/game/<id>/resign
 POST /api/game/<id>/ai-move
-POST /api/ai/experiment        # Experimento 2: baseline vs baseline+redes
+POST /api/ai/experiment        # Duelo entre configuraciones (p. ej. mcts-250 vs mcts-l-250)
+POST /api/ai/torneo            # Torneo round-robin paralelo entre configuraciones
 POST /api/game/<id>/analysis   # Análisis de posición: top jugadas con win-rate
 
 GET  /api/game/<id>
@@ -139,118 +127,76 @@ El motor valida todas las jugadas; la IA devuelve sus métricas junto al movimie
 
 ### Fase A — Jugar temprano (motor + infraestructura)
 
-- [ ] **A1. Motor del juego** `engine/board.py` + `engine/scoring.py`
-  - [ ] Tablero 9×9, grupos/conectividad (union-find o BFS), libertades
-  - [ ] Capturas, regla de suicidio
-  - [ ] Ko simple v1 (superko opcional)
-  - [ ] Fin por doble pase
-  - [ ] Conteo por área, komi 7.5
-  - [ ] Tests unitarios de casos clásicos (captura larga, ko, ojo falso, seki) en `tests/test_engine.py`
-- [ ] **A2. Persistencia JSON** `storage/store.py` + `storage/perf.py`
-  - [ ] Guardar/leer partidas en `data/games/<id>.json` (esquema de arriba)
-  - [ ] `history.json` para historial y rankings
-  - [ ] Log rodante de métricas de rendimiento de la app (`perf.py`)
-- [ ] **A3. MCTS baseline** `ai/mcts.py`
-  - [ ] Selección, expansión, simulación, retropropagación, UCT
-  - [ ] Playouts aleatorios + heurísticas ligeras: priorizar capturas, evitar suicidio, valorar libertades, filtrar movimientos inútiles
-  - [ ] Parámetros configurables: 250 / 800 / 2000 simulaciones
-  - [ ] KPIs: time_ms, sims, nodes, sims/s, win_rate
-  - [ ] Tests en `tests/test_mcts.py` (selección, expansión, retropropagación)
-- [ ] **A4. API REST Flask** `app.py`
-  - [ ] Endpoints de la sección API (new, move, pass, resign, ai-move, games, metrics, perf)
-  - [ ] Middleware de instrumentación (latencia por endpoint, tracemalloc)
-  - [ ] `tests/test_api.py`
-- [ ] **A5. Frontend visual** `static/`
-  - [ ] Tablero SVG 9×9 interactivo (clic para colocar)
-  - [ ] Modos: PvP, humano vs IA, IA vs IA
-  - [ ] Controles: colocar, pasar, rendirse, nueva partida, selector de simulaciones, selector de versión de IA
-  - [ ] Panel en vivo: turno, capturas, puntuación, sims, nodos, tiempo de decisión, win-rate estimado
-- [ ] **A6. Replay** `static/js/replay.js`
-  - [ ] Velocidad ajustable, anterior/siguiente, saltar al movimiento N
-  - [ ] Mostrar coordenadas y métricas por movimiento
-  - [ ] Comparar decisiones de la IA durante la partida
-  - [ ] Reconstrucción re-aplicando coordenadas del JSON
-- [ ] **A7. Métricas de app + dashboard** `static/js/metrics.js`
-  - [ ] `GET /api/perf` con latencias, memoria, tiempos de IA
-  - [ ] Dashboard con Chart.js: rankings, win-rates, tiempos de decisión, distribución de latencias
+- [x] **A1. Motor del juego** `motor/board.py` + `motor/scoring.py`
+  - [x] Tablero 9×9, grupos/conectividad, libertades
+  - [x] Capturas, regla de suicidio
+  - [x] Ko simple (superko opcional)
+  - [x] Fin por doble pase
+  - [x] Conteo por área, komi 7.5
+  - [x] Tests unitarios en `pruebas/test_engine.py`
+- [x] **A2. Persistencia JSON** `almacenamiento/store.py` + `almacenamiento/perf.py`
+  - [x] Guardar/leer partidas en `data/games/<id>.json`
+  - [x] `data/historial.json` para historial y rankings
+  - [x] Log rodante de métricas de rendimiento de la app (`perf.py`)
+- [x] **A3. MCTS baseline** `ia/mcts.py`
+  - [x] Selección, expansión, simulación, retropropagación, UCT
+  - [x] Playouts aleatorios + heurísticas ligeras (capturas, libertades, filtro de movimientos inútiles)
+  - [x] Parámetros configurables: 250 / 800 / 2000 simulaciones
+  - [x] KPIs: time_ms, sims, nodes, win_rate
+  - [x] Tests en `pruebas/test_mcts.py`
+- [x] **A4. API REST Flask** `app.py`
+  - [x] Endpoints de la sección API
+  - [x] Middleware de instrumentación (latencia por endpoint, memoria)
+  - [x] `pruebas/test_api.py`
+- [x] **A5. Frontend visual** `static/`
+  - [x] Tablero SVG interactivo (clic para colocar)
+  - [x] Modos: PvP, humano vs IA, IA vs IA, duelo MCTS vs MCTS L
+  - [x] Controles: colocar, pasar, rendirse, nueva partida, selector de simulaciones, selector de IA
+  - [x] Panel en vivo: turno, capturas, puntuación, sims, nodos, tiempo de decisión, win-rate estimado
+- [x] **A6. Replay** `static/js/repeticion.js`
+  - [x] Velocidad ajustable, anterior/siguiente, saltar al movimiento N
+  - [x] Mostrar coordenadas y métricas por movimiento
+  - [x] Reconstrucción re-aplicando coordenadas del JSON
+- [x] **A7. Métricas de app + dashboard** `static/js/metricas.js`
+  - [x] `GET /api/perf` con latencias, memoria, tiempos de IA
+  - [x] Dashboard con Chart.js: rankings, win-rates
 
-### Fase B — IA inspirada en AlphaGo
+### Fase B — IA y comparativas
 
-- [x] **B8. Dataset histórico** `training/download_dataset.py` + `training/dataset.py`
-  - [x] Descarga de SGF públicos 9×9 → `data/historical/` (fuentes configurables; usa directamente los `.sgf` presentes)
-  - [x] Parser SGF → posiciones codificadas (color, turno, legales) + etiquetas (movimiento realizado / resultado) + compatibilidad 19×19
-- [x] **B9. Redes** `training/nets.py`
-  - [x] CNN pequeña (3 capas conv 3×3, BN, ReLU), entrada multicanal (5 canales, coincide con `ai/redes.py`)
-  - [x] Policy: logits de 82 (81 intersecciones + 1 pase)
-  - [x] Value: sigmoide (probabilidad de ganar)
-  - [x] Export a ONNX (`policy.onnx` + `value.onnx`, batch dinámico; tests con `importorskip`)
-- [ ] **B10. Notebook Colab** `training/Colab_AlphaGo.ipynb`
-  - [x] Carga de dataset (SGF → muestras, split train/val)
-  - [x] Definición de redes (`training/nets.py`)
-  - [x] Entrenamiento Policy + Value (loss combinado)
-  - [x] Export `.onnx` → copiar a `models/` + verificación con `cargar_redes`
-  - [ ] Self-play v1 → v3 (guiones listos; ejecución en Colab)
-- [ ] **B11. Integración MCTS + redes** `ai/mcts.py` + `ai/redes.py`
-  - [x] Policy guía la selección (priors PUCT) y expansión
-  - [x] Value evalúa nodos hoja
-  - [x] Inferencia vía ONNX Runtime (`ai/redes.py`, ONNX opcional en runtime)
-  - [x] Fallback elegante si no hay modelos (baseline heurístico)
-  - [ ] Modelos entrenados reales en `models/`
-- [ ] **B12. Experimento 2** endpoint `/api/ai/experiment` + `ai/experimento.py`
-  - [x] Harness: configs `aleatorio`, `mcts-<sims>`, `mcts-<sims>+red`; partidas con semilla
+- [x] **B8. MCTS L (port de Lina)** `ia/mcts_lina.py` + `ia/rival_lina.py`
+  - [x] MCTS estilo académico (UCT clásico + rollout aleatorio puro) sobre nuestro motor
+  - [x] Handicap de simulaciones aplicado en el adaptador (config `mcts-l-<sims>`)
+  - [x] Modo duelo MCTS vs MCTS L en la app
+  - [x] Tests en `pruebas/test_rival_lina.py`
+- [x] **B9. Experimento** endpoint `/api/ai/experiment` + `ia/experimento.py`
+  - [x] Harness: configs `aleatorio`, `mcts-<sims>`, `mcts-l-<sims>`; partidas con semilla
   - [x] Agrega victorias, empates, movimientos y tiempos promedio por jugador
-  - [x] MCTS heurístico vs MCTS + Policy + Value
-  - [x] Medir win-rate, tiempo por movimiento, rendimiento general
-  - [ ] Comparativas formales publicadas (ver D17)
-
-### Fase C — Self-play (evolución de modelos)
-
-- [ ] **C13. Self-play** `training/self_play.py`
-  - [x] IA vs IA (con modelo/config actual): generador de SGF con callback `al_jugar`
-  - [x] Guardar partidas en `data/training/` y/o `data/historical/`
-  - [ ] Reentrenamiento → v2, v3
-- [ ] **C14. Meta-modelos** `data/models_meta.json`
-  - [x] `models_meta.json` creado (esquema; sin versiones hasta tener modelos)
-  - [ ] Versionar modelos y resultados
-  - [ ] Gráficos de evolución v1 → v3 en el dashboard
-- [ ] **C15. Experimento 3**
-  - [x] Cada versión vs aleatoria, vs baseline heurístico, vs versión anterior (mediante `ai/experimento.py`)
-  - [ ] Resultados agregados en el dashboard
-
-### Fase D — Análisis de desempeño
-
-- [ ] **D16. Modo análisis de posición**
-  - [x] Cargar cualquier posición guardada
-  - [x] Pedir top jugadas a la IA con win-rate
-- [x] **D17. Informe de desempeño** `analysis/performance_report.py`
-  - [x] Genera `performance_report.md` y `performance_report.html` (datos en vivo del servidor o disco)
-  - [x] Secciones: arquitectura, configuración experimental, rendimiento del motor (benchmark), latencia de la app, rendimiento del MCTS, impacto de simulaciones, estado de las redes, baseline vs redes, evolución de modelos, tiempo/memoria, experimentos, conclusiones y limitaciones
-  - [ ] Curar el informe tras la integración de modelos (`--experimentos`)
-- [ ] **D18. Verificación final**
-  - [x] `pytest` completo (engine, mcts, api, dataset, self-play, redes skip, informe)
-  - [ ] Curar informe con datos reales tras iteración de modelos
+  - [x] Tests en `pruebas/test_experimento.py`
+- [x] **B10. Torneo round-robin** `ia/torneo.py`
+  - [x] Partidas paralelas (ProcessPool) entre configuraciones
+  - [x] Resumen por configuración: victorias, derrotas, margen, tiempo por jugada, sims/s
+  - [x] Persistencia de partidas en `data/games/`
 
 ---
 
 ## Configuración experimental
 
 - **Experimento 1 — MCTS baseline:** 250 vs 800 vs 2000 simulaciones (medir tiempo, nodos, win-rate).
-- **Experimento 2 — Baseline vs MCTS+redes:** win-rate, tiempo por movimiento, rendimiento general.
-- **Experimento 3 — Evolución self-play:** v1 vs v2 vs v3, cada versión contra aleatoria, MCTS heurístico y versión anterior.
+- **Experimento 2 — Baseline vs MCTS L:** `mcts-<sims>` vs `mcts-l-<sims>` con el handicap del adaptador.
+- **Torneo:** round-robin entre `aleatorio`, `mcts-*` y `mcts-l-*`.
 
 ## Convención de código
 
-**Todo el código en español**: nombres de funciones, variables, clases, comentarios, mensajes de error y de UI. Ejemplos: `colocar_piedra()`, `calcular_libertades`, `jugar_movimiento()`, `Tablero`, `partida`, `turno`, `capturas`, `puntaje`. Los identificadores técnicos (ONNX, JSON, API, MCTS, SGF) se conservan en inglés por ser nombres propios de librerías/protocolos.
+**Todo el código en español**: nombres de funciones, variables, clases, comentarios, mensajes de error y de UI. Ejemplos: `colocar_piedra()`, `calcular_libertades`, `jugar_movimiento()`, `Tablero`, `partida`, `turno`, `capturas`, `puntaje`. Los identificadores técnicos (JSON, API, MCTS, SGF) se conservan en inglés por ser nombres propios de librerías/protocolos.
 
 ## Restricciones ambientales / cómo ejecutar
 
-- Backend: `pip install -r requirements.txt` con `flask` y `onnxruntime` (CPU).
+- Backend: `pip install -r requirements.txt` (`flask` + `pytest`).
 - Módulo de python para rutas: usar rutas absolutas/relativas al repo base (todas las operaciones de archivo relativas al workspace).
-- Cheats: `pytest tests/` desde la raíz del proyecto.
+- Cheats: `pytest pruebas/` desde la raíz del proyecto.
+- App: `python app.py` (Flask en `127.0.0.1:5000`).
 
 ## Notas de diseño (pendientes durante implementación)
 
 - Superko: v1 ko simple; opcional.
-- Dataset: si el download público falla, el parser acepta cualquier SGF colocado en `data/historical/`.
-- Redes: entrada 3–8 canales; policy softmax 82; value sigmoide.
-- `models_meta.json` permite varias versiones de modelo para comparación en vivo.
+- Handicap MCTS L: `HANDICAP_LINA = 3` multiplica las simulaciones efectivas (su rollout aleatorio puro es más débil que el heurístico a igualdad de simulaciones).

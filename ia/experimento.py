@@ -1,7 +1,7 @@
 """Experimentos: enfrentamientos entre configuraciones de IA.
 
-Permite comparar baseline vs baseline (Experimento 1: simulaciones),
-baseline vs baseline+red (Experimento 2) o configuraciones arbitrarias.
+Permite comparar baseline vs baseline (Experimento 1: simulaciones) o
+configuraciones arbitrarias.
 """
 
 import random
@@ -9,7 +9,7 @@ import time
 
 from motor import BLANCO, NEGRO, color_a_simbolo
 from motor.scoring import Partida
-from .mcts import MCTS, crear_mcts
+from .mcts import crear_mcts
 from .rival_lina import RivalLina
 
 LIMITE_MOVIMIENTOS_POR_DEFECTO = 360
@@ -18,34 +18,24 @@ LIMITE_MOVIMIENTOS_POR_DEFECTO = 360
 def construir_ia(config: str, tiempo_limite_ms: int | None = None):
     """Devuelve una función ``(config) -> jugador`` que decide sobre una Partida.
 
-    ``config`` acepta: ``aleatorio``, ``mcts-<sims>``, ``mcts-<sims>+red``
-    o ``lina-<sims>`` (la MCTS de Lina, con handicap aplicado en su adaptador).
+    ``config`` acepta: ``aleatorio``, ``mcts-<sims>`` o ``mcts-l-<sims>``
+    (la MCTS de Lina, con handicap aplicado en su adaptador).
     """
     if config == "aleatorio":
         return lambda partida: _jugada_aleatoria(partida)
 
-    if config.startswith("lina-"):
-        simulaciones = int(config.split("-")[1])
+    if config.startswith("mcts-l-"):
+        simulaciones = int(config.split("-")[2])
         rival = RivalLina(simulaciones=simulaciones,
                           tiempo_limite_ms=tiempo_limite_ms)
         return lambda partida: rival.mejor_jugada(partida)
 
-    con_red = config.endswith("+red")
-    base = config.removesuffix("+red")
-    if not base.startswith("mcts-"):
+    if not config.startswith("mcts-"):
         raise ValueError(f"configuración desconocida: {config}")
-    simulaciones = int(base.split("-")[1])
+    simulaciones = int(config.split("-")[1])
 
-    if con_red:
-        from .redes import cargar_redes
-        redes = cargar_redes()
-        if redes is None:
-            raise ValueError("no hay modelos para config +red (falta models/policy.onnx)")
-        mcts = MCTS(simulaciones=simulaciones,
-                    tiempo_limite_ms=tiempo_limite_ms, redes=redes)
-    else:
-        mcts = crear_mcts(simulaciones=simulaciones,
-                          tiempo_limite_ms=tiempo_limite_ms)
+    mcts = crear_mcts(simulaciones=simulaciones,
+                      tiempo_limite_ms=tiempo_limite_ms)
     return lambda partida: mcts.mejor_jugada(partida)
 
 
@@ -68,11 +58,13 @@ def jugar_partida(jugador_negro, jugador_blanco, komi: float = 7.5,
                   semilla: int | None = None,
                   tamano: int = 9,
                   registrar_metadatos: bool = True,
-                  al_jugar=None) -> dict:
+                  al_jugar=None,
+                  al_final=None) -> dict:
     """Juega una partida completa entre dos funciones decisión (IA o aleatorio).
 
     ``al_jugar(color, jugada, tiempo_ms)`` se invoca tras cada movimiento
     (permite registrar SGF u otros formatos sin tocar el motor).
+    ``al_final(partida)`` se invoca al terminar con la Partida ya jugada.
     """
     if semilla is not None:
         random.seed(semilla)
@@ -100,6 +92,9 @@ def jugar_partida(jugador_negro, jugador_blanco, komi: float = 7.5,
         num_movimientos += 1
         if al_jugar is not None:
             al_jugar(color, jugada, tiempos[color][-1])
+
+    if al_final is not None:
+        al_final(partida)
 
     resultado = partida.resultado
     ganador = resultado.get("ganador") if resultado else None
@@ -149,10 +144,9 @@ def experimento(config_negro: str, config_blanco: str, partidas: int = 10,
         return round(sum(lista) / len(lista), 2) if lista else 0.0
 
     def _media_sims(config):
-        if config.startswith("lina-"):
-            return int(config.split("-")[1])
-        base = config.removesuffix("+red")
-        return int(base.split("-")[1]) if base.startswith("mcts-") else 0
+        if config.startswith("mcts-l-"):
+            return int(config.split("-")[2])
+        return int(config.split("-")[1]) if config.startswith("mcts-") else 0
 
     return {
         "negro": config_negro,

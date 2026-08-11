@@ -5,17 +5,17 @@
 - **Lina María Castañeda Hernández**
 - **Jorge Antonio García Romero**
 
-## Descripción del proyecto
+## Descripción del Repositorio
 
-Este proyecto desarrolla una aplicación capaz de jugar **Go**, inspirada en los conceptos presentados en el documental *AlphaGo*.
+Este Repositorio desarrolla una aplicación capaz de jugar **Go**, inspirada en los conceptos presentados en el documental *AlphaGo*.
 
 El objetivo principal es implementar una aplicación que pueda jugar GO usando las reglas fundamentales del juego y  simular alphaGo en este usando solo **Monte Carlo Tree Search (MCTS)** sin redes neuronales de política (propone un movimiento) y valor (calcula el valor futuro de quedar en esa posición) tal y como es el AlphaGo.
 
-La aplicación incluye dos implementaciones de MCTS: una **heurística** con UCT y playouts guiados, y la **MCTS L** (el MCTS, con rollout aleatorio puro). Ambas pueden enfrentarse entre sí, contra un jugador aleatorio o contra una persona mediante la aplicación web.
+La aplicación incluye dos implementaciones de MCTS: una **heurística** con UCT y playouts guiados, y la **MCTS L** (el MCTS, con rollout aleatorio puro). Ambas pueden enfrentarse entre sí, contra un jugador aleatorio (se colocan las fichas en una posición válida aleatoriamente) o contra una persona mediante la aplicación web.
 
 ---
 
-# 1. Estructura del proyecto
+# 1. Estructura del repositorio
 
 ```text
 AlphaGo/
